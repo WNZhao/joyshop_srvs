@@ -1,0 +1,6 @@
+database:
+  user: root
+  password: Walker123Admin!@#
+  host: 127.0.0.1
+  port: 3306
+  name: joyshop_user_srv

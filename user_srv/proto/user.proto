@@ -1,0 +1,71 @@
+syntax="proto3";
+import "google/protobuf/empty.proto";
+option go_package=".;proto";
+
+service User {
+
+  rpc GetUserList (PageInfo) returns (UserListResponse) {} // 用户列表
+  rpc GetUserByMobile(MobileRequest) returns (UserInfoResponse) {} // 根据手机号获取用户信息
+  rpc GetUserById(IdRequest) returns (UserInfoResponse) {} // 根据用户ID获取用户信息
+  rpc CreateUser(CreateUserInfo) returns (UserInfoResponse) {} // 创建用户
+  rpc UpdateUser(UpdateUserInfo) returns (google.protobuf.Empty) {} // 更新用户
+  rpc DeleteUser(IdRequest) returns (google.protobuf.Empty) {} // 删除用户
+  rpc CheckPassword(PasswordCheckInof) returns (CheckReponse) {} // 检查密码
+}
+
+message PasswordCheckInof{
+  string password = 1;
+  string encryptPassword = 2;
+}
+
+message CheckReponse{
+  bool success = 1;
+//  string message = 2;
+//  string encryptPassword = 3;
+}
+
+message PageInfo {
+  uint32 page = 1;
+  uint32 pageSize = 2;
+}
+message MobileRequest{
+  string mobile = 1;
+}
+
+message IdRequest{
+  int32 id = 1;
+}
+
+message CreateUserInfo{
+  string password = 1;
+  string mobile = 2;
+  string email = 3;
+  string nickname = 4;
+  uint64 birthday = 5;
+}
+
+message UpdateUserInfo{
+  int32 id = 1;
+  string password = 2;
+  string mobile = 3;
+  string email = 4;
+  string nickname = 5;
+  uint64 birthday = 6;
+}
+
+message UserInfoResponse{
+  int32 id= 1;
+  string password= 2;
+  string mobile= 3;
+  string email= 4;
+  string nickname= 5;
+  uint64 birthday= 6;
+  string gender= 7;
+  string avatar= 8;
+  int32 role= 9;
+}
+
+message UserListResponse{
+  uint32 total= 1;
+  repeated UserInfoResponse data= 2;
+}
