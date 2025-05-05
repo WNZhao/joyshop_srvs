@@ -41,7 +41,8 @@ message CreateUserInfo{
   string mobile = 2;
   string email = 3;
   string nickname = 4;
-  uint64 birthday = 5;
+  string username = 5;
+  uint64 birthday = 6;
 }
 
 message UpdateUserInfo{
@@ -63,6 +64,7 @@ message UserInfoResponse{
   string gender= 7;
   string avatar= 8;
   int32 role= 9;
+  string username= 10;
 }
 
 message UserListResponse{

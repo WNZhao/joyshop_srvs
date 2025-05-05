@@ -109,6 +109,7 @@ func main() {
 		user := &model.User{
 			Mobile:   fmt.Sprintf("1380013800%d", i),
 			NickName: fmt.Sprintf("小明%d", i),
+			UserName: fmt.Sprintf("xiaoming%d", i),
 			Password: newPassword,
 			Email:    fmt.Sprintf("xiaoming%d@123.com", i),
 		}

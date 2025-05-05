@@ -264,7 +264,8 @@ type CreateUserInfo struct {
 	Mobile        string                 `protobuf:"bytes,2,opt,name=mobile,proto3" json:"mobile,omitempty"`
 	Email         string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
 	Nickname      string                 `protobuf:"bytes,4,opt,name=nickname,proto3" json:"nickname,omitempty"`
-	Birthday      uint64                 `protobuf:"varint,5,opt,name=birthday,proto3" json:"birthday,omitempty"`
+	Username      string                 `protobuf:"bytes,5,opt,name=username,proto3" json:"username,omitempty"`
+	Birthday      uint64                 `protobuf:"varint,6,opt,name=birthday,proto3" json:"birthday,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -323,6 +324,13 @@ func (x *CreateUserInfo) GetEmail() string {
 func (x *CreateUserInfo) GetNickname() string {
 	if x != nil {
 		return x.Nickname
+	}
+	return ""
+}
+
+func (x *CreateUserInfo) GetUsername() string {
+	if x != nil {
+		return x.Username
 	}
 	return ""
 }
@@ -429,6 +437,7 @@ type UserInfoResponse struct {
 	Gender        string                 `protobuf:"bytes,7,opt,name=gender,proto3" json:"gender,omitempty"`
 	Avatar        string                 `protobuf:"bytes,8,opt,name=avatar,proto3" json:"avatar,omitempty"`
 	Role          int32                  `protobuf:"varint,9,opt,name=role,proto3" json:"role,omitempty"`
+	Username      string                 `protobuf:"bytes,10,opt,name=username,proto3" json:"username,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -526,6 +535,13 @@ func (x *UserInfoResponse) GetRole() int32 {
 	return 0
 }
 
+func (x *UserInfoResponse) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
 type UserListResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Total         uint32                 `protobuf:"varint,1,opt,name=total,proto3" json:"total,omitempty"`
@@ -595,20 +611,21 @@ const file_user_proto_rawDesc = "" +
 	"\rMobileRequest\x12\x16\n" +
 	"\x06mobile\x18\x01 \x01(\tR\x06mobile\"\x1b\n" +
 	"\tIdRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x05R\x02id\"\x92\x01\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\"\xae\x01\n" +
 	"\x0eCreateUserInfo\x12\x1a\n" +
 	"\bpassword\x18\x01 \x01(\tR\bpassword\x12\x16\n" +
 	"\x06mobile\x18\x02 \x01(\tR\x06mobile\x12\x14\n" +
 	"\x05email\x18\x03 \x01(\tR\x05email\x12\x1a\n" +
 	"\bnickname\x18\x04 \x01(\tR\bnickname\x12\x1a\n" +
-	"\bbirthday\x18\x05 \x01(\x04R\bbirthday\"\xa2\x01\n" +
+	"\busername\x18\x05 \x01(\tR\busername\x12\x1a\n" +
+	"\bbirthday\x18\x06 \x01(\x04R\bbirthday\"\xa2\x01\n" +
 	"\x0eUpdateUserInfo\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x16\n" +
 	"\x06mobile\x18\x03 \x01(\tR\x06mobile\x12\x14\n" +
 	"\x05email\x18\x04 \x01(\tR\x05email\x12\x1a\n" +
 	"\bnickname\x18\x05 \x01(\tR\bnickname\x12\x1a\n" +
-	"\bbirthday\x18\x06 \x01(\x04R\bbirthday\"\xe8\x01\n" +
+	"\bbirthday\x18\x06 \x01(\x04R\bbirthday\"\x84\x02\n" +
 	"\x10UserInfoResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x16\n" +
@@ -618,7 +635,9 @@ const file_user_proto_rawDesc = "" +
 	"\bbirthday\x18\x06 \x01(\x04R\bbirthday\x12\x16\n" +
 	"\x06gender\x18\a \x01(\tR\x06gender\x12\x16\n" +
 	"\x06avatar\x18\b \x01(\tR\x06avatar\x12\x12\n" +
-	"\x04role\x18\t \x01(\x05R\x04role\"O\n" +
+	"\x04role\x18\t \x01(\x05R\x04role\x12\x1a\n" +
+	"\busername\x18\n" +
+	" \x01(\tR\busername\"O\n" +
 	"\x10UserListResponse\x12\x14\n" +
 	"\x05total\x18\x01 \x01(\rR\x05total\x12%\n" +
 	"\x04data\x18\x02 \x03(\v2\x11.UserInfoResponseR\x04data2\xf4\x02\n" +

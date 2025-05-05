@@ -24,6 +24,7 @@ type User struct {
 	Email    string     `json:"email" gorm:"column:email;unique;index:idx_email;not null"`
 	Password string     `json:"password" gorm:"column:password;not null;type:varchar(100)"`
 	NickName string     `json:"nick_name" gorm:"column:nick_name;type:varchar(20)"`
+	UserName string     `json:"user_name" gorm:"column:user_name;type:varchar(20);not null;unique;index:idx_user_name"`
 	Birthday *time.Time `json:"birthday" gorm:"column:birthday;type:datetime"`
 	Gender   string     `json:"gender" gorm:"column:gender;type:varchar(10);default:'unknown';comment:'unknown:未知,male:男,female:女'"`
 	Avatar   string     `json:"avatar" gorm:"column:avatar;type:varchar(100);default:'https://cdn.jsdelivr.net/gh/zhangguanzhang/picgo@master/img/20230920161420.png'"`

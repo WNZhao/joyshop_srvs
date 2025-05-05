@@ -60,6 +60,7 @@ func ModelToRsponse(user model.User) proto.UserInfoResponse {
 		Mobile:   user.Mobile,
 		Email:    user.Email,
 		Nickname: user.NickName,
+		Username: user.UserName,
 		Gender:   user.Gender,
 		Avatar:   user.Avatar,
 		Role:     int32(user.Role),
@@ -130,6 +131,7 @@ func (s *UserServer) CreateUser(ctx context.Context, req *proto.CreateUserInfo) 
 	user.Mobile = req.Mobile
 	user.Email = req.Email
 	user.NickName = req.Nickname
+	user.UserName = req.Username
 
 	options := &password.Options{10, 100, 32, sha512.New}
 	salt, encodedPwd := password.Encode(req.Password, options)
@@ -175,4 +177,21 @@ func (s *UserServer) CheckPassword(ctx context.Context, req *proto.PasswordCheck
 	return &proto.CheckReponse{
 		Success: check,
 	}, nil
+}
+
+func (s *UserServer) DeleteUser(ctx context.Context, req *proto.IdRequest) (*emptypb.Empty, error) {
+	// 删除用户
+	var user model.User
+	result := global.DB.First(&user, req.Id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	if result.RowsAffected == 0 {
+		return nil, status.Errorf(codes.NotFound, "用户不存在")
+	}
+	result = global.DB.Delete(&user)
+	if result.Error != nil {
+		return nil, status.Errorf(codes.Internal, result.Error.Error())
+	}
+	return &emptypb.Empty{}, nil
 }
