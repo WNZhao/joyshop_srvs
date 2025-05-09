@@ -1,0 +1,23 @@
+# 配置文件
+config/config-develop.yaml
+
+# IDE配置
+.idea/
+.vscode/
+
+# 编译输出
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# 测试文件
+*.test
+*.out
+
+# 依赖目录
+vendor/
+
+# 日志文件
+*.log 

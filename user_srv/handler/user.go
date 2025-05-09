@@ -75,14 +75,14 @@ func ModelToRsponse(user model.User) proto.UserInfoResponse {
 func (s *UserServer) GetUserList(ctx context.Context, info *proto.PageInfo) (*proto.UserListResponse, error) {
 	// 获取用户列表
 	var users []model.User
-	result := global.DB.Find(&users)
+	result := global.DB.Table("user").Find(&users)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	// 获取总数
 	rsp := &proto.UserListResponse{}
 	rsp.Total = uint32(result.RowsAffected)
-	global.DB.Scopes(Paginate(int(info.Page), int(info.PageSize))).Find(&users)
+	global.DB.Table("user").Scopes(Paginate(int(info.Page), int(info.PageSize))).Find(&users)
 
 	for _, user := range users {
 		userInfoRsp := ModelToRsponse(user)

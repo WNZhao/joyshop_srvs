@@ -1,12 +1,17 @@
+/*
+ * @Author: Will nanan_zhao@163.com
+ * @Date: 2025-05-08 17:09:45
+ * @LastEditors: Will nanan_zhao@163.com
+ * @LastEditTime: 2025-05-09 09:24:57
+ * @FilePath: /joyshop_srvs/user_srv/initialize/db.go
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 package initialize
 
 import (
 	"fmt"
-	"time"
 
-	"joyshop_srvs/user_srv/config/db"
 	"joyshop_srvs/user_srv/global"
-	"joyshop_srvs/user_srv/util"
 
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
@@ -15,54 +20,38 @@ import (
 	"gorm.io/gorm/schema"
 )
 
-// InitDB 初始化数据库连接
-func InitDB() {
-	// 加载配置
-	config := &db.Config{}
-	configPath := util.GetConfigPath()
-	zap.S().Debugf("正在加载配置文件: %s", configPath)
-
-	err := util.LoadConfig(configPath, config)
-	if err != nil {
-		zap.S().Errorf("加载配置文件失败: %v", err)
-		zap.S().Fatalf("配置文件路径: %s", configPath)
-	}
-
-	// 拼接DSN
-	dsn := fmt.Sprintf(
-		"%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		config.Database.User,
-		config.Database.Password,
-		config.Database.Host,
-		config.Database.Port,
-		config.Database.Name,
+// InitDB 初始化数据库
+func InitDB() error {
+	// 构建DSN
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		global.GlobalConfig.DBConfig.User,
+		global.GlobalConfig.DBConfig.Password,
+		global.GlobalConfig.DBConfig.Host,
+		global.GlobalConfig.DBConfig.Port,
+		global.GlobalConfig.DBConfig.DBName,
 	)
-	zap.S().Debugf("数据库连接信息: %s:%d/%s", config.Database.Host, config.Database.Port, config.Database.Name)
 
-	// 设置打印日志
-	newLogger := logger.New(
-		zap.NewStdLog(zap.L()), // 使用zap作为日志输出
-		logger.Config{
-			SlowThreshold: time.Second * 10,
-			LogLevel:      logger.Info,
-			Colorful:      true,
-		},
-	)
-	// 连接数据库
-	var errDB error
+	zap.S().Debugf("数据库连接信息: %s", dsn)
 
-	global.DB, errDB = gorm.Open(mysql.Open(dsn), &gorm.Config{
+	// 配置GORM
+	gormConfig := &gorm.Config{
+		// 使用单数表名
 		NamingStrategy: schema.NamingStrategy{
-			SingularTable: true, // 使用单数表名
+			SingularTable: true,
 		},
-		Logger: newLogger,
-	})
-	if errDB != nil {
-		zap.S().Errorf("连接数据库失败: %v", errDB)
-		zap.S().Fatalf("数据库连接信息: %s", dsn)
+		// 配置日志
+		Logger: logger.Default.LogMode(logger.Info),
 	}
+
+	// 连接数据库
+	db, err := gorm.Open(mysql.Open(dsn), gormConfig)
+	if err != nil {
+		return fmt.Errorf("连接数据库失败: %v", err)
+	}
+
+	// 设置全局变量
+	global.DB = db
 
 	zap.S().Info("数据库连接成功")
-	// 定义表结构，将表结构直接生成对应的表 自动建表
-	//db.AutoMigrate(&model.User{})
+	return nil
 }
