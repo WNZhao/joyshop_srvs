@@ -5,6 +5,7 @@ go 1.24.0
 require (
 	github.com/anaskhan96/go-password-encoder v0.0.0-20201010210601-c765b799fd72
 	github.com/hashicorp/consul/api v1.32.1
+	github.com/satori/uuid v1.2.0
 	github.com/spf13/viper v1.20.1
 	go.uber.org/zap v1.27.0
 	google.golang.org/grpc v1.72.0

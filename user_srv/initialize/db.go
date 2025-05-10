@@ -2,7 +2,7 @@
  * @Author: Will nanan_zhao@163.com
  * @Date: 2025-05-08 17:09:45
  * @LastEditors: Will nanan_zhao@163.com
- * @LastEditTime: 2025-05-09 09:24:57
+ * @LastEditTime: 2025-05-10 14:44:29
  * @FilePath: /joyshop_srvs/user_srv/initialize/db.go
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -10,6 +10,9 @@ package initialize
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"time"
 
 	"joyshop_srvs/user_srv/global"
 
@@ -33,6 +36,15 @@ func InitDB() error {
 
 	zap.S().Debugf("数据库连接信息: %s", dsn)
 
+	newLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags), // 使用标准输出
+		logger.Config{
+			SlowThreshold: time.Second, // 慢查询阈值
+			LogLevel:      logger.Info, // 日志级别
+			Colorful:      true,        // 彩色
+		},
+	)
+
 	// 配置GORM
 	gormConfig := &gorm.Config{
 		// 使用单数表名
@@ -40,7 +52,7 @@ func InitDB() error {
 			SingularTable: true,
 		},
 		// 配置日志
-		Logger: logger.Default.LogMode(logger.Info),
+		Logger: newLogger, //logger.Default.LogMode(logger.Info),
 	}
 
 	// 连接数据库
