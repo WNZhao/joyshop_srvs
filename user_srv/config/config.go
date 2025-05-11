@@ -32,3 +32,15 @@ type ServerInfo struct {
 	Port int    `mapstructure:"port" json:"port"`
 	Name string `mapstructure:"name" json:"name"`
 }
+
+type NacosConfig struct {
+	Host      string `mapstructure:"host" yaml:"host"`
+	Port      uint64 `mapstructure:"port" yaml:"port"`
+	Namespace string `mapstructure:"namespace" yaml:"namespace"`
+	Timeout   uint64 `mapstructure:"timeout" yaml:"timeout"`
+	LogDir    string `mapstructure:"logDir" yaml:"logDir"`
+	CacheDir  string `mapstructure:"cacheDir" yaml:"cacheDir"`
+	LogLevel  string `mapstructure:"logLevel" yaml:"logLevel"`
+	DataId    string `mapstructure:"dataId" yaml:"dataId"`
+	Group     string `mapstructure:"group" yaml:"group"`
+}

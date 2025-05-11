@@ -6,8 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"joyshop_srvs/user_srv/config"
-	"joyshop_srvs/user_srv/model"
+	"user_srv/config"
+	"user_srv/model"
 
 	"github.com/anaskhan96/go-password-encoder"
 	"github.com/spf13/viper"

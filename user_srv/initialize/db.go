@@ -14,7 +14,7 @@ import (
 	"os"
 	"time"
 
-	"joyshop_srvs/user_srv/global"
+	"user_srv/global"
 
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
@@ -27,11 +27,11 @@ import (
 func InitDB() error {
 	// 构建DSN
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		global.GlobalConfig.DBConfig.User,
-		global.GlobalConfig.DBConfig.Password,
-		global.GlobalConfig.DBConfig.Host,
-		global.GlobalConfig.DBConfig.Port,
-		global.GlobalConfig.DBConfig.DBName,
+		global.ServerConfig.DBConfig.User,
+		global.ServerConfig.DBConfig.Password,
+		global.ServerConfig.DBConfig.Host,
+		global.ServerConfig.DBConfig.Port,
+		global.ServerConfig.DBConfig.DBName,
 	)
 
 	zap.S().Debugf("数据库连接信息: %s", dsn)

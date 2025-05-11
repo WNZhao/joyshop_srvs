@@ -9,12 +9,17 @@
 package global
 
 import (
-	"joyshop_srvs/user_srv/config"
+	"user_srv/config"
 
+	"github.com/hashicorp/consul/api"
 	"gorm.io/gorm"
 )
 
 var (
-	DB           *gorm.DB
-	GlobalConfig config.ServerConfig
+	// DB 全局数据库连接
+	DB *gorm.DB
+	// ServerConfig 全局配置变量
+	ServerConfig config.ServerConfig
+	// ConsulClient Consul 客户端
+	ConsulClient *api.Client
 )

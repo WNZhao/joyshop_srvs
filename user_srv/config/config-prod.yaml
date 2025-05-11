@@ -1,0 +1,26 @@
+nacos:
+  host: 192.168.1.7
+  port: 8848
+  namespace: '8976f27d-9226-4d72-8f80-1364847e2c1b'
+  timeout: 5000
+  logDir: './tmp/log'
+  cacheDir: './tmp/cache'
+  logLevel: 'debug'
+  dataId: 'user_srv'
+  group: 'prod'
+
+server:
+  host: 0.0.0.0
+  port: 50051
+  name: user_srv
+
+db:
+  host: localhost
+  port: 3306
+  user: root
+  password: root
+  dbname: joyshop_user_srv
+
+consul:
+  host: localhost
+  port: 8500
