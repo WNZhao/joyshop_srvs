@@ -102,6 +102,19 @@ user_srv/
 - **接口扩展**：新增 gRPC 接口时，先修改 `proto/user.proto`，再生成代码并实现 handler。
 - **测试规范**：所有功能变更需补充/完善 `user_test.go`，保证核心流程可回归。
 
+## 更新日志
+
+### 2025-05-11
+- 修正 Consul 服务注册逻辑，Address 字段不再允许 0.0.0.0，需配置为实际 IP
+- 配置读取逻辑统一，修复 viper 解析 Nacos 配置时的类型错误
+- 全局变量统一为 global.ServerConfig，修正原有 GlobalConfig 命名
+- 升级 google.golang.org/grpc 依赖至 v1.64.1，兼容新版 protoc-gen-go-grpc 生成代码
+- 统一所有 import 路径为 user_srv/ 前缀，移除 joyshop_srvs/user_srv/ 旧路径
+- 测试用例完善，所有唯一性字段均自动生成，避免数据库冲突
+- 代码结构优化，Consul 客户端初始化与服务注册/注销分离，逻辑更清晰
+- go.mod、go.sum 依赖整理，移除根目录无用依赖，仅保留 user_srv 子模块依赖
+- 其它细节修复与注释完善
+
 ---
 
 如需详细开发文档或接口说明，请参考各目录下源码及注释。 
