@@ -114,6 +114,19 @@ user_srv/
 - 代码结构优化，Consul 客户端初始化与服务注册/注销分离，逻辑更清晰
 - go.mod、go.sum 依赖整理，移除根目录无用依赖，仅保留 user_srv 子模块依赖
 - 其它细节修复与注释完善
+- [重要] gRPC 服务如需 Consul 健康检查通过，main.go 必须注册官方健康检查服务（grpc_health_v1）。否则 Consul 检查会失败，服务显示为红色。
+  代码示例：
+  ```go
+  import (
+      "google.golang.org/grpc/health"
+      "google.golang.org/grpc/health/grpc_health_v1"
+  )
+  // ...
+  healthServer := health.NewServer()
+  grpc_health_v1.RegisterHealthServer(server, healthServer)
+  healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)
+  ```
+  proto 文件无需声明 health 服务，直接在 Go 代码注册即可。
 
 ---
 

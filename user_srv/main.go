@@ -23,6 +23,8 @@ import (
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
 )
 
 func main() {
@@ -40,6 +42,13 @@ func main() {
 
 	// 创建 gRPC 服务器
 	server := grpc.NewServer()
+
+	// 注册健康检查服务
+	healthServer := health.NewServer()
+	grpc_health_v1.RegisterHealthServer(server, healthServer)
+	healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)
+
+	// 注册用户服务
 	proto.RegisterUserServer(server, &handler.UserServer{})
 
 	// 获取服务地址和端口

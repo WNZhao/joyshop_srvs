@@ -21,7 +21,7 @@ func RegisterService() error {
 	registration := &api.AgentServiceRegistration{
 		ID:      ServiceID,
 		Name:    global.ServerConfig.ServerInfo.Name,
-		Tags:    []string{"user", "srv"},
+		Tags:    []string{"user-srv", "user", "srv"},
 		Port:    global.ServerConfig.ServerInfo.Port,
 		Address: global.ServerConfig.ServerInfo.Host,
 		Check: &api.AgentServiceCheck{
