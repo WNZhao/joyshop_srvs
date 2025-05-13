@@ -184,14 +184,16 @@ func setupTestDB(t *testing.T) {
 	// 设置全局DB实例
 	global.DB = db
 
-	// 自动迁移表结构 goodsCategory 一个商品属于多个分类
-	if err := db.AutoMigrate(
-		&Category{},
-		&Brand{},
-		&GoodsCategoryBrand{},
-		&Goods{},
-		&GoodsCategory{}); err != nil {
-		t.Fatalf("自动迁移表结构失败: %v", err)
+	// 在测试开始前检查表是否存在
+	if !db.Migrator().HasTable(&Category{}) {
+		if err := db.AutoMigrate(
+			&Category{},
+			&Brand{},
+			&Goods{},
+			&CategoryBrand{},
+		); err != nil {
+			t.Fatalf("自动迁移表结构失败: %v", err)
+		}
 	}
 }
 
@@ -303,9 +305,26 @@ func TestGoodsList(t *testing.T) {
 	// 设置测试数据库
 	setupTestDB(t)
 
+	// 先创建品牌
+	var brandId uint
+	for _, b := range testBrands {
+		brand := &Brand{
+			Name: b.Name,
+			Logo: b.Logo,
+			Desc: b.Desc,
+		}
+		if err := global.DB.Create(brand).Error; err != nil {
+			t.Fatalf("创建品牌失败: %v", err)
+		}
+		if b.Name == "Apple" {
+			brandId = brand.ID
+		}
+	}
+
 	// 创建测试商品
 	for _, g := range testGoods {
 		goods := &Goods{
+			BrandId:         brandId, // 设置品牌ID
 			Name:            g.Name,
 			GoodsSn:         g.GoodsSn,
 			MarketPrice:     g.MarketPrice,

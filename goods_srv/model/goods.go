@@ -39,7 +39,7 @@ func (g *GormList) Scan(value interface{}) error {
 type Category struct {
 	gorm.Model
 	Name     string    `gorm:"type:varchar(50);not null;comment:分类名称"`
-	ParentId uint      `gorm:"type:int;not null;default:0;comment:父分类ID;"`
+	ParentId uint      `gorm:"type:int;default:0;comment:父分类ID;"`
 	Category *Category `gorm:"foreignKey:ParentId;references:ID;constraint:OnDelete:SET NULL"`
 	Level    int       `gorm:"type:int;not null;default:1;comment:分类层级"`
 	Sort     int       `gorm:"type:int;not null;default:0;comment:排序"`
@@ -55,7 +55,7 @@ type Brand struct {
 }
 
 // GoodsCategoryBrand 商品分类和品牌关联表
-type GoodsCategoryBrand struct {
+type CategoryBrand struct {
 	gorm.Model
 	CategoryId uint     `gorm:"type:int;not null;comment:分类ID"`
 	Category   Category `gorm:"foreignKey:CategoryId;references:ID"`
@@ -67,6 +67,7 @@ type GoodsCategoryBrand struct {
 type Goods struct {
 	gorm.Model
 	BrandId         uint       `gorm:"type:int;not null;comment:品牌ID"`
+	Brand           Brand      `gorm:"foreignKey:BrandId;references:ID"`
 	OnSale          bool       `gorm:"type:boolean;not null;default:false;comment:是否上架"`
 	ShipFree        bool       `gorm:"type:boolean;not null;default:false;comment:是否包邮"`
 	IsNew           bool       `gorm:"type:boolean;not null;default:false;comment:是否新品"`
@@ -99,8 +100,8 @@ func (Brand) TableName() string {
 }
 
 // TableName 设置表名
-func (GoodsCategoryBrand) TableName() string {
-	return "goods_category_brand"
+func (CategoryBrand) TableName() string {
+	return "category_brand"
 }
 
 // CreateGoods 创建商品
