@@ -1,0 +1,23 @@
+name: goods_srv
+host: 0.0.0.0
+port: 50051
+tags: ['goods', 'srv']
+consul:
+  host: 127.0.0.1
+  port: 8500
+mysql:
+  host: 127.0.0.1
+  port: 3306
+  user: root
+  password: root
+  dbname: joyshop
+  max_idle_conns: 10
+  max_open_conns: 100
+  log_mode: 'info'
+  log_zap: true
+log:
+  level: 'debug'
+  filename: 'goods_srv.log'
+  max_size: 200
+  max_age: 30
+  max_backups: 7

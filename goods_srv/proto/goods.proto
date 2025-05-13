@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package goods;
+option go_package = "goods_srv/proto";
+
+// 商品服务
+service Goods {
+  // 获取商品列表
+  rpc GetGoodsList(GoodsListRequest) returns (GoodsListResponse);
+  // 获取商品详情
+  rpc GetGoodsById(GoodsByIdRequest) returns (GoodsInfoResponse);
+  // 创建商品
+  rpc CreateGoods(CreateGoodsRequest) returns (GoodsInfoResponse);
+  // 更新商品
+  rpc UpdateGoods(UpdateGoodsRequest) returns (GoodsInfoResponse);
+  // 删除商品
+  rpc DeleteGoods(DeleteGoodsRequest) returns (Empty);
+  // 按分类获取商品
+  rpc GetGoodsByCategory(GoodsByCategoryRequest) returns (GoodsListResponse);
+  // 搜索商品
+  rpc SearchGoods(SearchGoodsRequest) returns (GoodsListResponse);
+}
+
+// 空消息
+message Empty {}
+
+// 商品信息
+message GoodsInfo {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
+  double price = 4;
+  int32 stock = 5;
+  string category = 6;
+  string image = 7;
+  int32 status = 8;
+  string created_at = 9;
+  string updated_at = 10;
+}
+
+// 获取商品列表请求
+message GoodsListRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+}
+
+// 获取商品列表响应
+message GoodsListResponse {
+  int32 total = 1;
+  repeated GoodsInfo data = 2;
+}
+
+// 获取商品详情请求
+message GoodsByIdRequest {
+  int32 id = 1;
+}
+
+// 商品信息响应
+message GoodsInfoResponse {
+  GoodsInfo data = 1;
+}
+
+// 创建商品请求
+message CreateGoodsRequest {
+  string name = 1;
+  string description = 2;
+  double price = 3;
+  int32 stock = 4;
+  string category = 5;
+  string image = 6;
+}
+
+// 更新商品请求
+message UpdateGoodsRequest {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
+  double price = 4;
+  int32 stock = 5;
+  string category = 6;
+  string image = 7;
+  int32 status = 8;
+}
+
+// 删除商品请求
+message DeleteGoodsRequest {
+  int32 id = 1;
+}
+
+// 按分类获取商品请求
+message GoodsByCategoryRequest {
+  string category = 1;
+  int32 page = 2;
+  int32 page_size = 3;
+}
+
+// 搜索商品请求
+message SearchGoodsRequest {
+  string keyword = 1;
+  int32 page = 2;
+  int32 page_size = 3;
+} 
