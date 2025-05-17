@@ -39,7 +39,7 @@ func (g *GormList) Scan(value interface{}) error {
 type Category struct {
 	gorm.Model
 	Name     string    `gorm:"type:varchar(50);not null;comment:分类名称"`
-	ParentId uint      `gorm:"type:int;default:0;comment:父分类ID;"`
+	ParentId *int      `gorm:"type:int unsigned;default:null;comment:父分类ID;"`
 	Category *Category `gorm:"foreignKey:ParentId;references:ID;constraint:OnDelete:SET NULL"`
 	Level    int       `gorm:"type:int;not null;default:1;comment:分类层级"`
 	Sort     int       `gorm:"type:int;not null;default:0;comment:排序"`
@@ -54,12 +54,12 @@ type Brand struct {
 	Desc string `gorm:"type:varchar(200);not null;default:'';comment:品牌描述"`
 }
 
-// GoodsCategoryBrand 商品分类和品牌关联表
+// GoodsCategoryBrand 商品分类和品牌关联表,这两个建立一个同名索引
 type CategoryBrand struct {
 	gorm.Model
-	CategoryId uint     `gorm:"type:int;not null;comment:分类ID"`
+	CategoryId uint     `gorm:"type:int;not null;comment:分类ID;index:idx_category_id,unique"`
 	Category   Category `gorm:"foreignKey:CategoryId;references:ID"`
-	BrandId    uint     `gorm:"type:int;not null;comment:品牌ID"`
+	BrandId    uint     `gorm:"type:int;not null;comment:品牌ID;index:idx_category_id,unique"`
 	Brand      Brand    `gorm:"foreignKey:BrandId;references:ID"`
 }
 
@@ -74,6 +74,8 @@ type Goods struct {
 	IsHot           bool       `gorm:"type:boolean;not null;default:false;comment:是否热销"`
 	Name            string     `gorm:"type:varchar(100);not null;comment:商品名称"`
 	GoodsSn         string     `gorm:"type:varchar(50);not null;comment:商品编号"`
+	ClickNum        int        `gorm:"type:int;not null;default:0;comment:点击数"`
+	FavNum          int        `gorm:"type:int;not null;default:0;comment:收藏数"`
 	MarketPrice     float64    `gorm:"type:decimal(10,2);not null;comment:市场价格"`
 	ShopPrice       float64    `gorm:"type:decimal(10,2);not null;comment:本店价格"`
 	GoodsBrief      string     `gorm:"type:varchar(200);not null;comment:商品简介"`
@@ -82,6 +84,14 @@ type Goods struct {
 	GoodsFrontImage string     `gorm:"type:varchar(200);not null;comment:商品主图"`
 	Status          int        `gorm:"type:tinyint;not null;default:1;comment:商品状态"`
 	Categories      []Category `gorm:"many2many:goods_category;"`
+}
+
+// Banner 轮播图
+type Banner struct {
+	gorm.Model
+	Image string `gorm:"type:varchar(200);not null;comment:轮播图图片"`
+	Url   string `gorm:"type:varchar(200);not null;comment:轮播图链接"`
+	Index int    `gorm:"type:int;not null;default:0;comment:轮播图索引"`
 }
 
 // TableName 设置表名
@@ -129,19 +139,72 @@ func DeleteGoods(id uint) error {
 	return global.DB.Delete(&Goods{}, id).Error
 }
 
+// GoodsFilter 商品查询过滤器
+type GoodsFilter struct {
+	Page       int
+	PageSize   int
+	MinPrice   float64
+	MaxPrice   float64
+	IsHot      *bool
+	IsNew      *bool
+	IsTab      *bool
+	BrandId    uint
+	CategoryId uint
+	Keywords   string
+	OnSale     *bool
+}
+
 // GetGoodsList 获取商品列表
-func GetGoodsList(page, pageSize int) ([]Goods, int64, error) {
+func GetGoodsList(filter *GoodsFilter) ([]Goods, int64, error) {
 	var goods []Goods
 	var total int64
 
+	// 构建查询
+	query := global.DB.Model(&Goods{})
+
+	// 应用过滤条件
+	if filter.MinPrice > 0 {
+		query = query.Where("shop_price >= ?", filter.MinPrice)
+	}
+	if filter.MaxPrice > 0 {
+		query = query.Where("shop_price <= ?", filter.MaxPrice)
+	}
+	if filter.IsHot != nil {
+		query = query.Where("is_hot = ?", *filter.IsHot)
+	}
+	if filter.IsNew != nil {
+		query = query.Where("is_new = ?", *filter.IsNew)
+	}
+	if filter.IsTab != nil {
+		query = query.Where("is_tab = ?", *filter.IsTab)
+	}
+	if filter.BrandId > 0 {
+		query = query.Where("brand_id = ?", filter.BrandId)
+	}
+	if filter.CategoryId > 0 {
+		query = query.Joins("JOIN goods_category ON goods.id = goods_category.goods_id").
+			Where("goods_category.category_id = ?", filter.CategoryId)
+	}
+	if filter.Keywords != "" {
+		query = query.Where("name LIKE ? OR goods_brief LIKE ?", "%"+filter.Keywords+"%", "%"+filter.Keywords+"%")
+	}
+	if filter.OnSale != nil {
+		query = query.Where("on_sale = ?", *filter.OnSale)
+	}
+
 	// 获取总数
-	if err := global.DB.Model(&Goods{}).Count(&total).Error; err != nil {
+	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
 
-	// 获取分页数据
-	offset := (page - 1) * pageSize
-	err := global.DB.Preload("Categories").Offset(offset).Limit(pageSize).Find(&goods).Error
+	// 分页查询
+	offset := (filter.Page - 1) * filter.PageSize
+	err := query.Preload("Categories").
+		Preload("Brand").
+		Offset(offset).
+		Limit(filter.PageSize).
+		Find(&goods).Error
+
 	if err != nil {
 		return nil, 0, err
 	}
@@ -183,4 +246,103 @@ func SearchGoods(keyword string, page, pageSize int32) ([]Goods, int64, error) {
 	}
 
 	return goods, total, nil
+}
+
+// GetBrandList 获取品牌列表
+func GetBrandList(page, pageSize int) ([]Brand, int64, error) {
+	var brands []Brand
+	var total int64
+
+	// 获取总数
+	if err := global.DB.Model(&Brand{}).Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// 分页查询
+	if err := global.DB.Offset((page - 1) * pageSize).Limit(pageSize).Find(&brands).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return brands, total, nil
+}
+
+// CreateBrand 创建品牌
+func CreateBrand(brand *Brand) error {
+	return global.DB.Create(brand).Error
+}
+
+// DeleteBrand 删除品牌
+func DeleteBrand(id uint) error {
+	return global.DB.Delete(&Brand{}, id).Error
+}
+
+// UpdateBrand 更新品牌
+func UpdateBrand(brand *Brand) error {
+	return global.DB.Save(brand).Error
+}
+
+// GetAllCategories 获取所有分类
+func GetAllCategories() ([]Category, error) {
+	var categories []Category
+	if err := global.DB.Find(&categories).Error; err != nil {
+		return nil, err
+	}
+	return categories, nil
+}
+
+// GetSubCategory 获取子分类
+func GetSubCategory(id int32, level int32) (*Category, []Category, error) {
+	var category Category
+	var subCategories []Category
+
+	// 获取当前分类
+	if err := global.DB.First(&category, id).Error; err != nil {
+		return nil, nil, err
+	}
+
+	// 获取子分类
+	if err := global.DB.Where("parent_id = ? AND level = ?", id, level).Find(&subCategories).Error; err != nil {
+		return nil, nil, err
+	}
+
+	return &category, subCategories, nil
+}
+
+// CreateCategory 创建分类
+func CreateCategory(category *Category) error {
+	return global.DB.Create(category).Error
+}
+
+// DeleteCategory 删除分类
+func DeleteCategory(id uint) error {
+	return global.DB.Delete(&Category{}, id).Error
+}
+
+// UpdateCategory 更新分类
+func UpdateCategory(category *Category) error {
+	return global.DB.Save(category).Error
+}
+
+// GetBannerList 获取轮播图列表
+func GetBannerList() ([]Banner, error) {
+	var banners []Banner
+	if err := global.DB.Order("`index` asc").Find(&banners).Error; err != nil {
+		return nil, err
+	}
+	return banners, nil
+}
+
+// CreateBanner 创建轮播图
+func CreateBanner(banner *Banner) error {
+	return global.DB.Create(banner).Error
+}
+
+// DeleteBanner 删除轮播图
+func DeleteBanner(id uint) error {
+	return global.DB.Delete(&Banner{}, id).Error
+}
+
+// UpdateBanner 更新轮播图
+func UpdateBanner(banner *Banner) error {
+	return global.DB.Save(banner).Error
 }

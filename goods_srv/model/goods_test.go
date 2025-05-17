@@ -21,18 +21,18 @@ import (
 var (
 	testCategories = []struct {
 		Name     string
-		ParentId uint
+		ParentId *int
 		Level    int
 		Sort     int
 		IsTab    bool
 	}{
-		{"手机数码", 0, 1, 1, true},
-		{"电脑办公", 0, 1, 2, true},
-		{"家用电器", 0, 1, 3, true},
-		{"智能手机", 1, 2, 1, false},
-		{"平板电脑", 1, 2, 2, false},
-		{"笔记本", 2, 2, 1, false},
-		{"台式机", 2, 2, 2, false},
+		{"手机数码", nil, 1, 1, true},
+		{"电脑办公", nil, 1, 2, true},
+		{"家用电器", nil, 1, 3, true},
+		{"智能手机", nil, 2, 1, false},
+		{"平板电脑", nil, 2, 2, false},
+		{"笔记本", nil, 2, 1, false},
+		{"台式机", nil, 2, 2, false},
 	}
 
 	testBrands = []struct {
@@ -160,11 +160,11 @@ func setupTestDB(t *testing.T) {
 
 	// 构建DSN
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		cfg.DBConfig.User,
-		cfg.DBConfig.Password,
-		cfg.DBConfig.Host,
-		cfg.DBConfig.Port,
-		cfg.DBConfig.DBName,
+		cfg.MySQL.User,
+		cfg.MySQL.Password,
+		cfg.MySQL.Host,
+		cfg.MySQL.Port,
+		cfg.MySQL.DBName,
 	)
 
 	// 配置GORM
@@ -191,6 +191,7 @@ func setupTestDB(t *testing.T) {
 			&Brand{},
 			&Goods{},
 			&CategoryBrand{},
+			&Banner{},
 		); err != nil {
 			t.Fatalf("自动迁移表结构失败: %v", err)
 		}
@@ -203,19 +204,48 @@ func TestGoodsCRUD(t *testing.T) {
 
 	// 创建测试分类
 	var categoryId uint
+	var parentIds = make(map[string]uint) // 用于存储一级分类的ID
+
+	// 先创建一级分类
 	for _, cat := range testCategories {
-		category := &Category{
-			Name:     cat.Name,
-			ParentId: cat.ParentId,
-			Level:    cat.Level,
-			Sort:     cat.Sort,
-			IsTab:    cat.IsTab,
+		if cat.Level == 1 {
+			category := &Category{
+				Name:     cat.Name,
+				ParentId: cat.ParentId,
+				Level:    cat.Level,
+				Sort:     cat.Sort,
+				IsTab:    cat.IsTab,
+			}
+			if err := global.DB.Create(category).Error; err != nil {
+				t.Fatalf("创建分类失败: %v", err)
+			}
+			parentIds[cat.Name] = category.ID
+			if cat.Name == "手机数码" {
+				categoryId = category.ID
+			}
 		}
-		if err := global.DB.Create(category).Error; err != nil {
-			t.Fatalf("创建分类失败: %v", err)
-		}
-		if cat.Name == "智能手机" {
-			categoryId = category.ID
+	}
+
+	// 再创建二级分类
+	for _, cat := range testCategories {
+		if cat.Level == 2 {
+			var parentId int
+			switch cat.Name {
+			case "智能手机", "平板电脑":
+				parentId = int(parentIds["手机数码"])
+			case "笔记本", "台式机":
+				parentId = int(parentIds["电脑办公"])
+			}
+			category := &Category{
+				Name:     cat.Name,
+				ParentId: &parentId,
+				Level:    cat.Level,
+				Sort:     cat.Sort,
+				IsTab:    cat.IsTab,
+			}
+			if err := global.DB.Create(category).Error; err != nil {
+				t.Fatalf("创建分类失败: %v", err)
+			}
 		}
 	}
 
@@ -340,24 +370,30 @@ func TestGoodsList(t *testing.T) {
 		}
 	}
 
-	// 测试分页获取商品列表
-	goods, total, err := GetGoodsList(1, 2)
+	// 测试获取商品列表
+	zap.S().Info("测试获取商品列表...")
+	filter := &GoodsFilter{
+		Page:     1,
+		PageSize: 2,
+	}
+	goods, total, err := GetGoodsList(filter)
 	if err != nil {
 		t.Fatalf("获取商品列表失败: %v", err)
 	}
 	if len(goods) != 2 {
-		t.Errorf("获取的商品数量不正确，期望: 2, 实际: %d", len(goods))
+		t.Fatalf("获取商品列表数量错误，期望 2，实际 %d", len(goods))
 	}
-	if total < 3 {
-		t.Errorf("商品总数不正确，期望: >=3, 实际: %d", total)
+	if total != 3 {
+		t.Fatalf("商品总数错误，期望 3，实际 %d", total)
 	}
 
-	// 测试第二页
-	goods, total, err = GetGoodsList(2, 2)
+	// 测试分页
+	filter.Page = 2
+	goods, total, err = GetGoodsList(filter)
 	if err != nil {
-		t.Fatalf("获取第二页商品列表失败: %v", err)
+		t.Fatalf("获取商品列表失败: %v", err)
 	}
 	if len(goods) != 1 {
-		t.Errorf("第二页商品数量不正确，期望: 1, 实际: %d", len(goods))
+		t.Fatalf("获取商品列表数量错误，期望 1，实际 %d", len(goods))
 	}
 }

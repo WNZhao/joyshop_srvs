@@ -11,7 +11,7 @@ type ServerConfig struct {
 		Port int    `mapstructure:"port"`
 	} `mapstructure:"consul"`
 
-	DBConfig struct {
+	MySQL struct {
 		Host         string `mapstructure:"host"`
 		Port         int    `mapstructure:"port"`
 		User         string `mapstructure:"user"`
@@ -30,4 +30,17 @@ type ServerConfig struct {
 		MaxAge     int    `mapstructure:"max_age"`
 		MaxBackups int    `mapstructure:"max_backups"`
 	} `mapstructure:"log"`
+}
+
+// nacosConfig 是 Nacos 配置的结构体
+type NacosConfig struct {
+	Host      string `mapstructure:"host" yaml:"host"`
+	Port      uint64 `mapstructure:"port" yaml:"port"`
+	Namespace string `mapstructure:"namespace" yaml:"namespace"`
+	Timeout   uint64 `mapstructure:"timeout" yaml:"timeout"`
+	LogDir    string `mapstructure:"logDir" yaml:"logDir"`
+	CacheDir  string `mapstructure:"cacheDir" yaml:"cacheDir"`
+	LogLevel  string `mapstructure:"logLevel" yaml:"logLevel"`
+	DataId    string `mapstructure:"dataId" yaml:"dataId"`
+	Group     string `mapstructure:"group" yaml:"group"`
 }

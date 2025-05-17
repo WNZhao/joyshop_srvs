@@ -1,16 +1,16 @@
 /*
  * @Author: Will nanan_zhao@163.com
- * @Date: 2025-05-11 11:20:20
+ * @Date: 2025-05-17 17:18:18
  * @LastEditors: Will nanan_zhao@163.com
- * @LastEditTime: 2025-05-17 17:18:24
- * @FilePath: /joyshop_srvs/user_srv/util/consul.go
+ * @LastEditTime: 2025-05-17 17:19:52
+ * @FilePath: /joyshop_srvs/goods_srv/util/consul.go
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 package util
 
 import (
 	"fmt"
-	"user_srv/global"
+	"goods_srv/global"
 
 	"github.com/hashicorp/consul/api"
 	"github.com/satori/uuid"
@@ -28,12 +28,12 @@ func RegisterService() error {
 	ServiceID = uuid.NewV4().String()
 	registration := &api.AgentServiceRegistration{
 		ID:      ServiceID,
-		Name:    global.ServerConfig.ServerInfo.Name,
-		Tags:    []string{"user-srv", "user", "srv"},
-		Port:    global.ServerConfig.ServerInfo.Port,
-		Address: global.ServerConfig.ServerInfo.Host,
+		Name:    global.ServerConfig.Name,
+		Tags:    global.ServerConfig.Tags,
+		Port:    global.ServerConfig.Port,
+		Address: global.ServerConfig.Host,
 		Check: &api.AgentServiceCheck{
-			GRPC:                           fmt.Sprintf("%s:%d", global.ServerConfig.ServerInfo.Host, global.ServerConfig.ServerInfo.Port),
+			GRPC:                           fmt.Sprintf("%s:%d", global.ServerConfig.Host, global.ServerConfig.Port),
 			Timeout:                        "5s",
 			Interval:                       "5s",
 			DeregisterCriticalServiceAfter: "10s",
@@ -44,7 +44,7 @@ func RegisterService() error {
 		return fmt.Errorf("注册服务失败: %v", err)
 	}
 
-	zap.S().Infof("服务注册成功，ID: %s", ServiceID)
+	zap.S().Infof("商品服务注册成功，ID: %s", ServiceID)
 	return nil
 }
 
@@ -58,6 +58,6 @@ func DeregisterService() error {
 		return fmt.Errorf("注销服务失败: %v", err)
 	}
 
-	zap.S().Infof("服务注销成功，ID: %s", ServiceID)
+	zap.S().Infof("商品服务注销成功，ID: %s", ServiceID)
 	return nil
 }

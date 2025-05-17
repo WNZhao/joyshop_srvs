@@ -1,3 +1,11 @@
+/*
+ * @Author: Will nanan_zhao@163.com
+ * @Date: 2025-05-12 16:58:21
+ * @LastEditors: Will nanan_zhao@163.com
+ * @LastEditTime: 2025-05-17 14:30:18
+ * @FilePath: /joyshop_srvs/goods_srv/initialize/db.go
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 package initialize
 
 import (
@@ -5,6 +13,7 @@ import (
 	"goods_srv/global"
 	"time"
 
+	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -12,6 +21,14 @@ import (
 )
 
 func InitDB() {
+	zap.S().Info("开始初始化数据库连接...")
+	zap.S().Infof("数据库配置信息: Host=%s, Port=%d, User=%s, DBName=%s",
+		global.ServerConfig.MySQL.Host,
+		global.ServerConfig.MySQL.Port,
+		global.ServerConfig.MySQL.User,
+		global.ServerConfig.MySQL.DBName,
+	)
+
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		global.ServerConfig.MySQL.User,
 		global.ServerConfig.MySQL.Password,
@@ -23,8 +40,10 @@ func InitDB() {
 	var logLevel logger.LogLevel
 	if global.ServerConfig.MySQL.LogMode == "info" {
 		logLevel = logger.Info
+		zap.S().Info("数据库日志级别设置为: INFO")
 	} else {
 		logLevel = logger.Error
+		zap.S().Info("数据库日志级别设置为: ERROR")
 	}
 
 	config := &gorm.Config{
@@ -34,19 +53,28 @@ func InitDB() {
 		Logger: logger.Default.LogMode(logLevel),
 	}
 
+	zap.S().Info("正在连接数据库...")
 	db, err := gorm.Open(mysql.Open(dsn), config)
 	if err != nil {
+		zap.S().Errorf("连接数据库失败: %v", err)
 		panic(fmt.Sprintf("连接数据库失败: %v", err))
 	}
+	zap.S().Info("数据库连接成功")
 
 	sqlDB, err := db.DB()
 	if err != nil {
+		zap.S().Errorf("获取数据库实例失败: %v", err)
 		panic(fmt.Sprintf("获取数据库实例失败: %v", err))
 	}
 
+	zap.S().Infof("设置数据库连接池参数: MaxIdleConns=%d, MaxOpenConns=%d",
+		global.ServerConfig.MySQL.MaxIdleConns,
+		global.ServerConfig.MySQL.MaxOpenConns,
+	)
 	sqlDB.SetMaxIdleConns(global.ServerConfig.MySQL.MaxIdleConns)
 	sqlDB.SetMaxOpenConns(global.ServerConfig.MySQL.MaxOpenConns)
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
 	global.DB = db
+	zap.S().Info("数据库初始化完成")
 }

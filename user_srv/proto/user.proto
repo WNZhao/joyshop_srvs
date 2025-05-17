@@ -1,7 +1,5 @@
 syntax="proto3";
 import "google/protobuf/empty.proto";
-import "google.golang.org/grpc/health"
-import "google.golang.org/grpc/health/grpc_health_v1"
 option go_package=".;proto";
 
 service User {

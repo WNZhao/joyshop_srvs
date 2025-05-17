@@ -1,54 +1,87 @@
+/*
+ * @Author: Will nanan_zhao@163.com
+ * @Date: 2025-05-12 17:13:18
+ * @LastEditors: Will nanan_zhao@163.com
+ * @LastEditTime: 2025-05-17 17:15:38
+ * @FilePath: /joyshop_srvs/goods_srv/main.go
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 package main
 
 import (
 	"fmt"
+	"net"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"goods_srv/global"
 	"goods_srv/handler"
 	"goods_srv/initialize"
 	"goods_srv/proto"
-	"net"
+	"goods_srv/util"
 
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
 )
 
 func main() {
-	// 初始化配置
-	initialize.InitConfig()
-
 	// 初始化日志
 	initialize.InitLogger()
+
+	// 初始化配置
+	initialize.InitConfig()
 
 	// 初始化数据库
 	initialize.InitDB()
 
 	// 初始化 Consul
-	consulClient := initialize.InitConsul()
-	defer func() {
-		if err := consulClient.Agent().ServiceDeregister(global.ServerConfig.Name); err != nil {
-			panic(fmt.Sprintf("注销服务失败: %v", err))
-		}
-	}()
+	initialize.InitConsul()
 
 	// 创建 gRPC 服务器
 	server := grpc.NewServer()
-
-	// 注册商品服务
-	proto.RegisterGoodsServer(server, &handler.GoodsServer{})
 
 	// 注册健康检查服务
 	healthServer := health.NewServer()
 	grpc_health_v1.RegisterHealthServer(server, healthServer)
 	healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)
 
-	// 启动服务
-	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%d", global.ServerConfig.Host, global.ServerConfig.Port))
+	// 注册商品服务
+	proto.RegisterGoodsServer(server, &handler.GoodsServer{})
+
+	// 获取服务地址和端口
+	addr := fmt.Sprintf("%s:%d", global.ServerConfig.ServerInfo.Host, global.ServerConfig.ServerInfo.Port)
+	lis, err := net.Listen("tcp", addr)
 	if err != nil {
-		panic(fmt.Sprintf("启动服务失败: %v", err))
+		zap.S().Fatalf("监听端口失败: %v", err)
 	}
 
-	if err := server.Serve(lis); err != nil {
-		panic(fmt.Sprintf("服务运行失败: %v", err))
+	// 启动服务
+	go func() {
+		zap.S().Infof("商品服务启动成功，监听地址: %s", addr)
+		if err := server.Serve(lis); err != nil {
+			zap.S().Fatalf("启动服务失败: %v", err)
+		}
+	}()
+
+	// 注册服务到 Consul
+	if err := util.RegisterService(); err != nil {
+		zap.S().Fatalf("注册服务到 Consul 失败: %v", err)
 	}
+
+	// 等待中断信号
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	// 注销服务
+	if err := util.DeregisterService(); err != nil {
+		zap.S().Errorf("从 Consul 注销服务失败: %v", err)
+	}
+
+	// 优雅关闭
+	server.GracefulStop()
+	zap.S().Info("商品服务已关闭")
 }
