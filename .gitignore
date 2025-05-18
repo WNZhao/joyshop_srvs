@@ -385,3 +385,7 @@ Temporary Items
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 config/config-develop.yaml
 
+# 保留 goods_srv/tmp 目录但忽略其内容
+goods_srv/tmp/*
+!goods_srv/tmp/.gitkeep
+
