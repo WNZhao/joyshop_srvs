@@ -3,8 +3,6 @@ package handler
 import (
 	"goods_srv/model"
 	"goods_srv/proto"
-
-	"gorm.io/gorm"
 )
 
 // ModelToProtoGoods 将model.Goods转换为proto.GoodsInfoResponse
@@ -53,8 +51,7 @@ func ProtoToModelGoods(req *proto.CreateGoodsInfo) *model.Goods {
 
 // ProtoToModelGoodsUpdate 将proto.CreateGoodsInfo转换为model.Goods
 func ProtoToModelGoodsUpdate(req *proto.CreateGoodsInfo) *model.Goods {
-	return &model.Goods{
-		Model:           gorm.Model{ID: uint(req.Id)},
+	goods := &model.Goods{
 		BrandId:         uint(req.BrandId),
 		OnSale:          req.OnSale,
 		ShipFree:        req.ShipFree,
@@ -70,6 +67,8 @@ func ProtoToModelGoodsUpdate(req *proto.CreateGoodsInfo) *model.Goods {
 		GoodsFrontImage: req.GoodsFrontImage,
 		Status:          int(req.Status),
 	}
+	goods.ID = uint(req.Id)
+	return goods
 }
 
 // ProtoToModelFilter 将proto.GoodsFilterRequest转换为model.GoodsFilter

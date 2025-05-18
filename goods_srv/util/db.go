@@ -2,7 +2,7 @@
  * @Author: Will nanan_zhao@163.com
  * @Date: 2025-05-18 19:13:14
  * @LastEditors: Will nanan_zhao@163.com
- * @LastEditTime: 2025-05-18 19:24:56
+ * @LastEditTime: 2025-05-18 20:33:06
  * @FilePath: /joyshop_srvs/goods_srv/util/db.go
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -37,6 +37,23 @@ func CleanTestTables() error {
 		&model.Category{},
 		&model.Brand{},
 		&model.Banner{},
+	}
+	for _, table := range tables {
+		if err := global.DB.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(table).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// 清空商品相关表数据
+func CleanGoodsRelatedTables() error {
+	zap.S().Info("清空商品相关表数据...")
+	tables := []interface{}{
+		&model.Goods{},
+		&model.CategoryBrand{},
+		&model.Category{},
+		&model.Brand{},
 	}
 	for _, table := range tables {
 		if err := global.DB.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(table).Error; err != nil {

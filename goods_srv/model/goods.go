@@ -132,12 +132,34 @@ func GetGoodsById(id uint) (*Goods, error) {
 
 // UpdateGoods 更新商品
 func UpdateGoods(goods *Goods) error {
-	return global.DB.Save(goods).Error
+	return global.DB.Model(&Goods{}).
+		Where("id = ?", goods.ID).
+		Updates(map[string]interface{}{
+			"brand_id":          goods.BrandId,
+			"on_sale":           goods.OnSale,
+			"ship_free":         goods.ShipFree,
+			"is_new":            goods.IsNew,
+			"is_hot":            goods.IsHot,
+			"name":              goods.Name,
+			"goods_sn":          goods.GoodsSn,
+			"market_price":      goods.MarketPrice,
+			"shop_price":        goods.ShopPrice,
+			"goods_brief":       goods.GoodsBrief,
+			"images":            goods.Images,
+			"desc_images":       goods.DescImages,
+			"goods_front_image": goods.GoodsFrontImage,
+			"status":            goods.Status,
+		}).Error
 }
 
 // DeleteGoods 删除商品
 func DeleteGoods(id uint) error {
 	return global.DB.Delete(&Goods{}, id).Error
+}
+
+// UpdateGoodsByMap 只更新指定字段
+func UpdateGoodsByMap(id uint, updateMap map[string]interface{}) error {
+	return global.DB.Model(&Goods{}).Where("id = ?", id).Updates(updateMap).Error
 }
 
 // GoodsFilter 商品查询过滤器

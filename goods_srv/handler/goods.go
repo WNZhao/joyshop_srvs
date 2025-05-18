@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"goods_srv/model"
 	"goods_srv/proto"
 
@@ -13,7 +14,7 @@ type GoodsServer struct {
 }
 
 // GetGoodsList 获取商品列表
-func (s *GoodsServer) GetGoodsList(ctx context.Context, req *proto.GoodsFilterRequest) (*proto.GoodsListResponse, error) {
+func (s *GoodsServer) GoodsList(ctx context.Context, req *proto.GoodsFilterRequest) (*proto.GoodsListResponse, error) {
 	// 转换查询参数为过滤器
 	filter := ProtoToModelFilter(req)
 
@@ -56,13 +57,38 @@ func (s *GoodsServer) CreateGoods(ctx context.Context, req *proto.CreateGoodsInf
 }
 
 // UpdateGoods 更新商品
+// func (s *GoodsServer) UpdateGoods(ctx context.Context, req *proto.CreateGoodsInfo) (*emptypb.Empty, error) {
+// 	goods := ProtoToModelGoodsUpdate(req)
+// 	err := model.UpdateGoods(goods)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+//		return &emptypb.Empty{}, nil
+//	}
 func (s *GoodsServer) UpdateGoods(ctx context.Context, req *proto.CreateGoodsInfo) (*emptypb.Empty, error) {
-	goods := ProtoToModelGoodsUpdate(req)
-	err := model.UpdateGoods(goods)
+	imagesJson, _ := json.Marshal(req.Images)
+	descImagesJson, _ := json.Marshal(req.DescImages)
+	updateMap := map[string]interface{}{
+		"brand_id":          req.BrandId,
+		"on_sale":           req.OnSale,
+		"ship_free":         req.ShipFree,
+		"is_new":            req.IsNew,
+		"is_hot":            req.IsHot,
+		"name":              req.Name,
+		"goods_sn":          req.GoodsSn,
+		"market_price":      req.MarketPrice,
+		"shop_price":        req.ShopPrice,
+		"goods_brief":       req.GoodsBrief,
+		"images":            string(imagesJson),
+		"desc_images":       string(descImagesJson),
+		"goods_front_image": req.GoodsFrontImage,
+		"status":            req.Status,
+	}
+	err := model.UpdateGoodsByMap(uint(req.Id), updateMap)
 	if err != nil {
 		return nil, err
 	}
-
 	return &emptypb.Empty{}, nil
 }
 
