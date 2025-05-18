@@ -11,6 +11,8 @@ package initialize
 import (
 	"fmt"
 	"goods_srv/global"
+	"log"
+	"os"
 	"time"
 
 	"go.uber.org/zap"
@@ -38,19 +40,38 @@ func InitDB() {
 	)
 
 	var logLevel logger.LogLevel
-	if global.ServerConfig.MySQL.LogMode == "info" {
+	switch global.ServerConfig.MySQL.LogMode {
+	case "info":
 		logLevel = logger.Info
-		zap.S().Info("数据库日志级别设置为: INFO")
-	} else {
+	case "warn":
+		logLevel = logger.Warn
+	case "error":
 		logLevel = logger.Error
-		zap.S().Info("数据库日志级别设置为: ERROR")
+	case "silent":
+		logLevel = logger.Silent
+	default:
+		logLevel = logger.Error
 	}
+	zap.S().Infof("数据库日志级别设置为: %s", global.ServerConfig.MySQL.LogMode)
+
+	// 创建自定义日志写入器
+	logWriter := log.New(os.Stdout, "\r\n", log.LstdFlags)
+
+	newLogger := logger.New(
+		logWriter,
+		logger.Config{
+			SlowThreshold:             time.Second, // 慢 SQL 阈值
+			LogLevel:                  logLevel,    // 日志级别
+			IgnoreRecordNotFoundError: true,        // 忽略记录未找到错误
+			Colorful:                  true,        // 彩色输出
+		},
+	)
 
 	config := &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true,
 		},
-		Logger: logger.Default.LogMode(logLevel),
+		Logger: newLogger,
 	}
 
 	zap.S().Info("正在连接数据库...")

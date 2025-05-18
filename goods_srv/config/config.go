@@ -32,15 +32,15 @@ type ServerConfig struct {
 	} `mapstructure:"log"`
 }
 
-// nacosConfig 是 Nacos 配置的结构体
+// NacosConfig 是 Nacos 配置的结构体
 type NacosConfig struct {
-	Host      string `mapstructure:"host" yaml:"host"`
-	Port      uint64 `mapstructure:"port" yaml:"port"`
-	Namespace string `mapstructure:"namespace" yaml:"namespace"`
-	Timeout   uint64 `mapstructure:"timeout" yaml:"timeout"`
-	LogDir    string `mapstructure:"logDir" yaml:"logDir"`
-	CacheDir  string `mapstructure:"cacheDir" yaml:"cacheDir"`
-	LogLevel  string `mapstructure:"logLevel" yaml:"logLevel"`
-	DataId    string `mapstructure:"dataId" yaml:"dataId"`
-	Group     string `mapstructure:"group" yaml:"group"`
+	Host      string `mapstructure:"host"`
+	Port      uint64 `mapstructure:"port"`
+	Namespace string `mapstructure:"namespace"`
+	Timeout   uint64 `mapstructure:"timeout"`
+	LogDir    string `mapstructure:"logDir"`
+	CacheDir  string `mapstructure:"cacheDir"`
+	LogLevel  string `mapstructure:"logLevel"`
+	DataId    string `mapstructure:"dataId"`
+	Group     string `mapstructure:"group"`
 }

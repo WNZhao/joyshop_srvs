@@ -1,36 +1,33 @@
+/*
+ * @Author: Will nanan_zhao@163.com
+ * @Date: 2025-05-12 16:58:08
+ * @LastEditors: Will nanan_zhao@163.com
+ * @LastEditTime: 2025-05-17 17:50:25
+ * @FilePath: /joyshop_srvs/goods_srv/initialize/logger.go
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 package initialize
 
 import (
-	"goods_srv/global"
+	"os"
 
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 func InitLogger() {
-	writeSyncer := getLogWriter()
-	encoder := getEncoder()
-	core := zapcore.NewCore(encoder, writeSyncer, zapcore.DebugLevel)
+	var logger *zap.Logger
+	var err error
 
-	logger := zap.New(core, zap.AddCaller())
-	zap.ReplaceGlobals(logger)
-}
-
-func getEncoder() zapcore.Encoder {
-	encoderConfig := zap.NewProductionEncoderConfig()
-	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
-	return zapcore.NewConsoleEncoder(encoderConfig)
-}
-
-func getLogWriter() zapcore.WriteSyncer {
-	lumberJackLogger := &lumberjack.Logger{
-		Filename:   global.ServerConfig.Log.Filename,
-		MaxSize:    global.ServerConfig.Log.MaxSize,
-		MaxBackups: global.ServerConfig.Log.MaxBackups,
-		MaxAge:     global.ServerConfig.Log.MaxAge,
-		Compress:   false,
+	// 根据环境变量设置日志模式
+	if os.Getenv("APP_ENV") == "production" {
+		logger, err = zap.NewProduction()
+	} else {
+		logger, err = zap.NewDevelopment()
 	}
-	return zapcore.AddSync(lumberJackLogger)
+
+	if err != nil {
+		panic(err)
+	}
+
+	zap.ReplaceGlobals(logger)
 }

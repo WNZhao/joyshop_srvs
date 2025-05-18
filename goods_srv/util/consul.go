@@ -31,9 +31,9 @@ func RegisterService() error {
 		Name:    global.ServerConfig.Name,
 		Tags:    global.ServerConfig.Tags,
 		Port:    global.ServerConfig.Port,
-		Address: global.ServerConfig.Host,
+		Address: global.ServerConfig.Consul.Host,
 		Check: &api.AgentServiceCheck{
-			GRPC:                           fmt.Sprintf("%s:%d", global.ServerConfig.Host, global.ServerConfig.Port),
+			GRPC:                           fmt.Sprintf("%s:%d", global.ServerConfig.Consul.Host, global.ServerConfig.Port),
 			Timeout:                        "5s",
 			Interval:                       "5s",
 			DeregisterCriticalServiceAfter: "10s",

@@ -2,7 +2,7 @@
  * @Author: Will nanan_zhao@163.com
  * @Date: 2025-05-12 17:13:18
  * @LastEditors: Will nanan_zhao@163.com
- * @LastEditTime: 2025-05-17 17:15:38
+ * @LastEditTime: 2025-05-18 11:00:52
  * @FilePath: /joyshop_srvs/goods_srv/main.go
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -38,7 +38,7 @@ func main() {
 	initialize.InitDB()
 
 	// 初始化 Consul
-	initialize.InitConsul()
+	global.ConsulClient = initialize.InitConsul()
 
 	// 创建 gRPC 服务器
 	server := grpc.NewServer()
@@ -52,7 +52,7 @@ func main() {
 	proto.RegisterGoodsServer(server, &handler.GoodsServer{})
 
 	// 获取服务地址和端口
-	addr := fmt.Sprintf("%s:%d", global.ServerConfig.ServerInfo.Host, global.ServerConfig.ServerInfo.Port)
+	addr := fmt.Sprintf("%s:%d", global.ServerConfig.Host, global.ServerConfig.Port)
 	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		zap.S().Fatalf("监听端口失败: %v", err)

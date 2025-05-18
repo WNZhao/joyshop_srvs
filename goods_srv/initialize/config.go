@@ -40,6 +40,7 @@ func loadNacosConfig() error {
 
 	var nacosConfig config.NacosConfig
 	if err := v.UnmarshalKey("nacos", &nacosConfig); err != nil {
+		zap.S().Errorf("解析 Nacos 配置失败: %v", err)
 		return err
 	}
 
