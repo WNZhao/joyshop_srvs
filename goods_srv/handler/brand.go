@@ -18,7 +18,7 @@ import (
 
 // BrandList 获取品牌列表
 func (s *GoodsServer) BrandList(ctx context.Context, req *proto.BrandFilterRequest) (*proto.BrandListResponse, error) {
-	brands, total, err := model.GetBrandList(int(req.Pages), int(req.PagePerNums))
+	brands, total, err := model.GetBrandList(int(req.Pages), int(req.PagePerNums), req.Name, req.Desc)
 	if err != nil {
 		return nil, err
 	}

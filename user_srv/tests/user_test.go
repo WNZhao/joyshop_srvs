@@ -60,7 +60,7 @@ func initTestConfig() error {
 	}
 
 	// 解析配置到结构体
-	if err := v.Unmarshal(&global.GlobalConfig); err != nil {
+	if err := v.Unmarshal(&global.ServerConfig); err != nil {
 		return fmt.Errorf("解析配置文件失败: %v", err)
 	}
 
@@ -95,7 +95,7 @@ func TestMain(m *testing.M) {
 
 	// 初始化gRPC连接
 	var err error
-	conn, err = grpc.NewClient(fmt.Sprintf("%s:%d", global.GlobalConfig.ServerInfo.Host, global.GlobalConfig.ServerInfo.Port), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err = grpc.NewClient(fmt.Sprintf("%s:%d", global.ServerConfig.ConsulInfo.Host, global.ServerConfig.ServerInfo.Port), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		zap.S().Errorw("[GetUserSrvClient] 连接 【用户服务失败】", "msg", err.Error())
 		return

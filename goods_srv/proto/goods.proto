@@ -155,6 +155,8 @@ message SubCategoryListResponse {
 message BrandFilterRequest {
   int32 pages = 1;
   int32 pagePerNums = 2;
+  string name = 3;  // 品牌名称，支持模糊查询
+  string desc = 4;  // 品牌描述，支持模糊查询
 }
 
 message BrandRequest {

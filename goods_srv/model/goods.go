@@ -249,17 +249,30 @@ func SearchGoods(keyword string, page, pageSize int32) ([]Goods, int64, error) {
 }
 
 // GetBrandList 获取品牌列表
-func GetBrandList(page, pageSize int) ([]Brand, int64, error) {
+func GetBrandList(page, pageSize int, name, desc string) ([]Brand, int64, error) {
 	var brands []Brand
 	var total int64
 
+	// 构建查询
+	query := global.DB.Model(&Brand{})
+
+	// 添加名称过滤条件
+	if name != "" {
+		query = query.Where("name LIKE ?", "%"+name+"%")
+	}
+
+	// 添加描述过滤条件
+	if desc != "" {
+		query = query.Where("desc LIKE ?", "%"+desc+"%")
+	}
+
 	// 获取总数
-	if err := global.DB.Model(&Brand{}).Count(&total).Error; err != nil {
+	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
 
 	// 分页查询
-	if err := global.DB.Offset((page - 1) * pageSize).Limit(pageSize).Find(&brands).Error; err != nil {
+	if err := query.Offset((page - 1) * pageSize).Limit(pageSize).Find(&brands).Error; err != nil {
 		return nil, 0, err
 	}
 

@@ -1049,6 +1049,8 @@ type BrandFilterRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Pages         int32                  `protobuf:"varint,1,opt,name=pages,proto3" json:"pages,omitempty"`
 	PagePerNums   int32                  `protobuf:"varint,2,opt,name=pagePerNums,proto3" json:"pagePerNums,omitempty"`
+	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"` // 品牌名称，支持模糊查询
+	Desc          string                 `protobuf:"bytes,4,opt,name=desc,proto3" json:"desc,omitempty"` // 品牌描述，支持模糊查询
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1095,6 +1097,20 @@ func (x *BrandFilterRequest) GetPagePerNums() int32 {
 		return x.PagePerNums
 	}
 	return 0
+}
+
+func (x *BrandFilterRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *BrandFilterRequest) GetDesc() string {
+	if x != nil {
+		return x.Desc
+	}
+	return ""
 }
 
 type BrandRequest struct {
@@ -1797,10 +1813,12 @@ const file_goods_proto_rawDesc = "" +
 	"\x17SubCategoryListResponse\x12\x14\n" +
 	"\x05total\x18\x01 \x01(\x05R\x05total\x12)\n" +
 	"\x04info\x18\x02 \x01(\v2\x15.CategoryInfoResponseR\x04info\x12;\n" +
-	"\rsubCategories\x18\x03 \x03(\v2\x15.CategoryInfoResponseR\rsubCategories\"L\n" +
+	"\rsubCategories\x18\x03 \x03(\v2\x15.CategoryInfoResponseR\rsubCategories\"t\n" +
 	"\x12BrandFilterRequest\x12\x14\n" +
 	"\x05pages\x18\x01 \x01(\x05R\x05pages\x12 \n" +
-	"\vpagePerNums\x18\x02 \x01(\x05R\vpagePerNums\"Z\n" +
+	"\vpagePerNums\x18\x02 \x01(\x05R\vpagePerNums\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\x12\x12\n" +
+	"\x04desc\x18\x04 \x01(\tR\x04desc\"Z\n" +
 	"\fBrandRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
