@@ -111,10 +111,14 @@ func ProtoToModelFilter(req *proto.GoodsFilterRequest) *model.GoodsFilter {
 
 // ModelToProtoCategory 将model.Category转换为proto.CategoryInfoResponse
 func ModelToProtoCategory(c *model.Category) *proto.CategoryInfoResponse {
+	var parentId int32
+	if c.ParentId != nil {
+		parentId = int32(*c.ParentId)
+	}
 	return &proto.CategoryInfoResponse{
 		Id:       int32(c.ID),
 		Name:     c.Name,
-		ParentId: int32(*c.ParentId),
+		ParentId: parentId,
 		Level:    int32(c.Level),
 		IsTab:    c.IsTab,
 	}
@@ -122,10 +126,14 @@ func ModelToProtoCategory(c *model.Category) *proto.CategoryInfoResponse {
 
 // ProtoToModelCategory 将proto.CategoryInfoRequest转换为model.Category
 func ProtoToModelCategory(req *proto.CategoryInfoRequest) *model.Category {
-	parentId := int(req.ParentId)
+	var parentId *int
+	if req.ParentId != 0 {
+		tmp := int(req.ParentId)
+		parentId = &tmp
+	}
 	return &model.Category{
 		Name:     req.Name,
-		ParentId: &parentId,
+		ParentId: parentId,
 		Level:    int(req.Level),
 		IsTab:    req.IsTab,
 	}

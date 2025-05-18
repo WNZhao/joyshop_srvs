@@ -124,6 +124,7 @@ var (
 	}
 )
 
+// 数据库模型测试 商品信息
 func setupTestDB(t *testing.T) {
 	// 初始化日志
 	zap.S().Info("开始初始化测试数据库...")

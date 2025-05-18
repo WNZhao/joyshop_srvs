@@ -12,7 +12,7 @@ func TestBrandList(t *testing.T) {
 	t.Run("基本分页", func(t *testing.T) {
 		rsp, err := goodsClient.BrandList(context.Background(), &proto.BrandFilterRequest{
 			Pages:       1,
-			PagePerNums: 10,
+			PagePerNums: 2,
 		})
 		if err != nil {
 			t.Errorf("获取品牌列表失败: %v", err)

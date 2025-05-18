@@ -2,7 +2,7 @@
  * @Author: Will nanan_zhao@163.com
  * @Date: 2025-05-18 14:06:45
  * @LastEditors: Will nanan_zhao@163.com
- * @LastEditTime: 2025-05-18 15:13:14
+ * @LastEditTime: 2025-05-18 18:04:07
  * @FilePath: /joyshop_srvs/goods_srv/tests/test_utils.go
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -60,4 +60,112 @@ func generateRandomBrandDesc() string {
 // 生成随机品牌信息
 func generateRandomBrand() (name, desc string) {
 	return generateRandomBrandName(), generateRandomBrandDesc()
+}
+
+// 生成淘宝风格的三级分类数据
+func GenerateTaobaoCategories() []map[string]interface{} {
+	return []map[string]interface{}{
+		{
+			"Name":  "家用电器",
+			"Level": 1,
+			"IsTab": true,
+			"SubCategories": []map[string]interface{}{
+				{
+					"Name":  "电视",
+					"Level": 2,
+					"IsTab": false,
+					"SubCategories": []map[string]interface{}{
+						{"Name": "智能电视", "Level": 3, "IsTab": false},
+						{"Name": "曲面电视", "Level": 3, "IsTab": false},
+					},
+				},
+				{
+					"Name":  "空调",
+					"Level": 2,
+					"IsTab": false,
+					"SubCategories": []map[string]interface{}{
+						{"Name": "壁挂式空调", "Level": 3, "IsTab": false},
+						{"Name": "柜式空调", "Level": 3, "IsTab": false},
+					},
+				},
+				{
+					"Name":  "洗衣机",
+					"Level": 2,
+					"IsTab": false,
+					"SubCategories": []map[string]interface{}{
+						{"Name": "滚筒洗衣机", "Level": 3, "IsTab": false},
+						{"Name": "波轮洗衣机", "Level": 3, "IsTab": false},
+					},
+				},
+			},
+		},
+		{
+			"Name":  "手机数码",
+			"Level": 1,
+			"IsTab": true,
+			"SubCategories": []map[string]interface{}{
+				{
+					"Name":  "手机",
+					"Level": 2,
+					"IsTab": false,
+					"SubCategories": []map[string]interface{}{
+						{"Name": "智能手机", "Level": 3, "IsTab": false},
+						{"Name": "老人机", "Level": 3, "IsTab": false},
+					},
+				},
+				{
+					"Name":  "平板",
+					"Level": 2,
+					"IsTab": false,
+					"SubCategories": []map[string]interface{}{
+						{"Name": "安卓平板", "Level": 3, "IsTab": false},
+						{"Name": "苹果iPad", "Level": 3, "IsTab": false},
+					},
+				},
+				{
+					"Name":  "智能穿戴",
+					"Level": 2,
+					"IsTab": false,
+					"SubCategories": []map[string]interface{}{
+						{"Name": "智能手表", "Level": 3, "IsTab": false},
+						{"Name": "智能手环", "Level": 3, "IsTab": false},
+					},
+				},
+			},
+		},
+		{
+			"Name":  "食品酒水",
+			"Level": 1,
+			"IsTab": true,
+			"SubCategories": []map[string]interface{}{
+				{
+					"Name":  "休闲零食",
+					"Level": 2,
+					"IsTab": false,
+					"SubCategories": []map[string]interface{}{
+						{"Name": "坚果炒货", "Level": 3, "IsTab": false},
+						{"Name": "糖果巧克力", "Level": 3, "IsTab": false},
+					},
+				},
+				{
+					"Name":  "粮油调味",
+					"Level": 2,
+					"IsTab": false,
+					"SubCategories": []map[string]interface{}{
+						{"Name": "食用油", "Level": 3, "IsTab": false},
+						{"Name": "大米", "Level": 3, "IsTab": false},
+					},
+				},
+				{
+					"Name":  "饮料冲调",
+					"Level": 2,
+					"IsTab": false,
+					"SubCategories": []map[string]interface{}{
+						{"Name": "牛奶乳品", "Level": 3, "IsTab": false},
+						{"Name": "咖啡", "Level": 3, "IsTab": false},
+					},
+				},
+			},
+		},
+	}
 }

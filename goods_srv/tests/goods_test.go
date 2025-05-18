@@ -2,96 +2,9 @@ package tests
 
 import (
 	"context"
-	"fmt"
-	"goods_srv/global"
-	"goods_srv/initialize"
 	"goods_srv/proto"
-	"os"
-	"path/filepath"
 	"testing"
-
-	"github.com/spf13/viper"
-	"go.uber.org/zap"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
-
-var (
-	goodsClient proto.GoodsClient
-	conn        *grpc.ClientConn
-)
-
-// 测试专用的配置初始化
-func initTestConfig() error {
-	// 获取当前目录
-	dir, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("获取工作目录失败: %v", err)
-	}
-
-	// 设置配置文件路径为父级目录下的config目录
-	configFile := filepath.Join(dir, "..", "config", "config-develop.yaml")
-	zap.S().Infof("正在加载配置文件: %s", configFile)
-
-	// 检查配置文件是否存在
-	if _, err := os.Stat(configFile); os.IsNotExist(err) {
-		return fmt.Errorf("配置文件不存在: %s", configFile)
-	}
-
-	// 初始化viper
-	v := viper.New()
-	v.SetConfigFile(configFile)
-
-	// 读取配置文件
-	if err := v.ReadInConfig(); err != nil {
-		return fmt.Errorf("读取配置文件失败: %v", err)
-	}
-
-	// 解析配置到结构体
-	if err := v.Unmarshal(&global.ServerConfig); err != nil {
-		return fmt.Errorf("解析配置文件失败: %v", err)
-	}
-
-	return nil
-}
-
-func TestMain(m *testing.M) {
-	// 初始化日志
-	initialize.InitLogger()
-
-	// 使用测试专用的配置初始化
-	if err := initTestConfig(); err != nil {
-		zap.S().Fatalf("初始化测试配置失败: %v", err)
-	}
-
-	// 初始化数据库
-	initialize.InitDB()
-
-	// 初始化gRPC连接
-	var err error
-	conn, err = grpc.NewClient(
-		fmt.Sprintf("%s:%d", global.ServerConfig.Host, global.ServerConfig.Port),
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
-	if err != nil {
-		zap.S().Errorw("[GetGoodsSrvClient] 连接商品服务失败", "msg", err.Error())
-		return
-	}
-	goodsClient = proto.NewGoodsClient(conn)
-
-	// 运行测试
-	code := m.Run()
-
-	// 清理资源
-	if err := conn.Close(); err != nil {
-		zap.S().Errorf("关闭gRPC连接失败: %v", err)
-	}
-
-	// 退出
-	if code != 0 {
-		zap.S().Fatalf("测试失败，退出码: %d", code)
-	}
-}
 
 // 测试获取商品列表
 func TestGoodsList(t *testing.T) {

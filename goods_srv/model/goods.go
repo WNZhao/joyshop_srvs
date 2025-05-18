@@ -38,12 +38,13 @@ func (g *GormList) Scan(value interface{}) error {
 // Category 商品分类
 type Category struct {
 	gorm.Model
-	Name     string    `gorm:"type:varchar(50);not null;comment:分类名称"`
-	ParentId *int      `gorm:"type:int unsigned;default:null;comment:父分类ID;"`
-	Category *Category `gorm:"foreignKey:ParentId;references:ID;constraint:OnDelete:SET NULL"`
-	Level    int       `gorm:"type:int;not null;default:1;comment:分类层级"`
-	Sort     int       `gorm:"type:int;not null;default:0;comment:排序"`
-	IsTab    bool      `gorm:"type:boolean;not null;default:false;comment:是否显示在导航栏"`
+	Name          string     `gorm:"type:varchar(50);not null;comment:分类名称"`
+	ParentId      *int       `gorm:"type:int unsigned;default:null;comment:父分类ID;"`
+	Category      *Category  `gorm:"foreignKey:ParentId;references:ID;constraint:OnDelete:SET NULL"`
+	SubCategories []Category `gorm:"foreignKey:ParentId;references:ID;constraint:OnDelete:CASCADE"`
+	Level         int        `gorm:"type:int;not null;default:1;comment:分类层级"`
+	Sort          int        `gorm:"type:int;not null;default:0;comment:排序"`
+	IsTab         bool       `gorm:"type:boolean;not null;default:false;comment:是否显示在导航栏"`
 }
 
 // Brand 品牌
@@ -122,7 +123,7 @@ func CreateGoods(goods *Goods) error {
 // GetGoodsById 根据ID获取商品
 func GetGoodsById(id uint) (*Goods, error) {
 	var goods Goods
-	err := global.DB.Preload("Categories").First(&goods, id).Error
+	err := global.DB.Preload("SubCategories").First(&goods, id).Error
 	if err != nil {
 		return nil, err
 	}
@@ -297,7 +298,7 @@ func UpdateBrand(brand *Brand) error {
 // GetAllCategories 获取所有分类
 func GetAllCategories() ([]Category, error) {
 	var categories []Category
-	if err := global.DB.Find(&categories).Error; err != nil {
+	if err := global.DB.Preload("SubCategories.SubCategories").Find(&categories).Error; err != nil {
 		return nil, err
 	}
 	return categories, nil
@@ -352,10 +353,27 @@ func CreateBanner(banner *Banner) error {
 
 // DeleteBanner 删除轮播图
 func DeleteBanner(id uint) error {
-	return global.DB.Delete(&Banner{}, id).Error
+	return global.DB.Unscoped().Delete(&Banner{}, id).Error
 }
 
 // UpdateBanner 更新轮播图
 func UpdateBanner(banner *Banner) error {
 	return global.DB.Save(banner).Error
+}
+
+// CheckBrandNameExists 检查品牌名称是否存在
+func CheckBrandNameExists(name string, excludeId ...uint) (bool, error) {
+	var count int64
+	query := global.DB.Model(&Brand{}).Where("name = ?", name)
+
+	// 如果提供了排除ID，则排除该ID的品牌
+	if len(excludeId) > 0 {
+		query = query.Where("id != ?", excludeId[0])
+	}
+
+	err := query.Count(&count).Error
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
 }
