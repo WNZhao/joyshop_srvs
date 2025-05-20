@@ -123,7 +123,7 @@ func CreateGoods(goods *Goods) error {
 // GetGoodsById 根据ID获取商品
 func GetGoodsById(id uint) (*Goods, error) {
 	var goods Goods
-	err := global.DB.Preload("SubCategories").First(&goods, id).Error
+	err := global.DB.Preload("Categories").First(&goods, id).Error
 	if err != nil {
 		return nil, err
 	}

@@ -36,7 +36,7 @@ func (s *GoodsServer) GoodsList(ctx context.Context, req *proto.GoodsFilterReque
 }
 
 // GetGoodsById 获取商品详情
-func (s *GoodsServer) GetGoodsById(ctx context.Context, req *proto.GoodInfoRequest) (*proto.GoodsInfoResponse, error) {
+func (s *GoodsServer) GetGoodsDetail(ctx context.Context, req *proto.GoodInfoRequest) (*proto.GoodsInfoResponse, error) {
 	goods, err := model.GetGoodsById(uint(req.Id))
 	if err != nil {
 		return nil, err

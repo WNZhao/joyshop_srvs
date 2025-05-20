@@ -7,6 +7,12 @@ import (
 
 // ModelToProtoGoods 将model.Goods转换为proto.GoodsInfoResponse
 func ModelToProtoGoods(g *model.Goods) *proto.GoodsInfoResponse {
+	// 获取分类ID列表
+	var categoryIds []int32
+	for _, category := range g.Categories {
+		categoryIds = append(categoryIds, int32(category.ID))
+	}
+
 	return &proto.GoodsInfoResponse{
 		Id:              int32(g.ID),
 		Name:            g.Name,
@@ -25,7 +31,7 @@ func ModelToProtoGoods(g *model.Goods) *proto.GoodsInfoResponse {
 		OnSale:          g.OnSale,
 		ShipFree:        g.ShipFree,
 		BrandId:         int32(g.BrandId),
-		CategoryIds:     nil, // 需要从关联表获取
+		CategoryIds:     categoryIds,
 	}
 }
 

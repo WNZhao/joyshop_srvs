@@ -284,3 +284,14 @@ func TestGoodsCRUD(t *testing.T) {
 		}
 	}
 }
+
+// 测试获取商品详情
+func TestGetGoodsDetail(t *testing.T) {
+	// 测试获取商品详情
+	rsp, err := goodsClient.GetGoodsDetail(context.Background(), &proto.GoodInfoRequest{Id: 14})
+	if err != nil {
+		t.Errorf("获取商品详情失败: %v", err)
+		return
+	}
+	t.Logf("商品详情: %v", rsp)
+}
