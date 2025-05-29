@@ -389,3 +389,10 @@ config/config-develop.yaml
 goods_srv/tmp/*
 !goods_srv/tmp/.gitkeep
 
+# 忽略 goods_srv/tmp 和 user_srv/tmp
+goods_srv/tmp/
+user_srv/tmp/*
+
+# 保留 tmp 目录
+!goods_srv/tmp/.gitkeep
+!user_srv/tmp/.gitkeep
