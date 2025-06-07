@@ -2,7 +2,7 @@
  * @Author: Will nanan_zhao@163.com
  * @Date: 2025-05-18 14:06:45
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2025-06-07 21:49:34
+ * @LastEditTime: 2025-06-07 21:53:32
  * @FilePath: /joyshop_srvs/inventory_srv/tests/inventory_test.go
  * @Description: 库存服务测试用例
  */

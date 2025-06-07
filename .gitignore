@@ -396,3 +396,7 @@ user_srv/tmp/*
 # 保留 tmp 目录
 !goods_srv/tmp/.gitkeep
 !user_srv/tmp/.gitkeep
+
+# 保留inventory_srv/tmp目录但忽略其中的所有文件
+inventory_srv/tmp/*
+!inventory_srv/tmp/.gitkeep
