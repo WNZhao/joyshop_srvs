@@ -1,10 +1,12 @@
 nacos:
-  host: 192.168.1.2
+  host: 192.168.1.7
   port: 8848
-  namespace: '1409f272-a09b-4656-89d0-eaa5f818cb0c'
-  timeout: 5000
+  namespace: 'b1da278a-9f12-416e-9da9-7a2a87892d7e'
+  timeout: 5000  
   logDir: './tmp/log'
   cacheDir: './tmp/cache'
   logLevel: 'debug'
   dataId: 'goods_srv'
   group: 'dev'
+  username: 'walker'
+  password: 'walker123'

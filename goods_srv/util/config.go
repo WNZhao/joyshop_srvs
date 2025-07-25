@@ -50,18 +50,21 @@ func LoadRemoteConfig(nacosConfig *config.NacosConfig, targetConfig interface{})
 	// 创建 Nacos 客户端
 	sc := []constant.ServerConfig{
 		{
-			IpAddr: nacosConfig.Host,
-			Port:   nacosConfig.Port,
+			IpAddr:      nacosConfig.Host,
+			Port:        nacosConfig.Port,
+			ContextPath: "/nacos", // Nacos 2.x 使用 /nacos 路径
 		},
 	}
 
 	cc := constant.ClientConfig{
 		NamespaceId:         nacosConfig.Namespace,
 		TimeoutMs:           nacosConfig.Timeout,
-		NotLoadCacheAtStart: true,
+		NotLoadCacheAtStart: false, // 修改为 false，允许加载缓存
 		LogDir:              nacosConfig.LogDir,
 		CacheDir:            nacosConfig.CacheDir,
 		LogLevel:            nacosConfig.LogLevel,
+		Username:            nacosConfig.Username, // 新增
+		Password:            nacosConfig.Password, // 新增
 	}
 
 	zap.S().Infof("正在连接 Nacos 服务器: %s:%d", sc[0].IpAddr, sc[0].Port)
