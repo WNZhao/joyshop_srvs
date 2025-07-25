@@ -1,0 +1,26 @@
+name: inventory_srv
+host: 192.168.1.7
+port: 50052
+tags: ['inventory', 'srv']
+consul:
+  host: 192.168.1.7
+  port: 8500
+mysql:
+  host: 127.0.0.1
+  port: 3306
+  user: root
+  password: walker123
+  dbname: joyshop_inventory
+  max_idle_conns: 10
+  max_open_conns: 100
+  log_mode: 'info'
+  log_zap: true
+log:
+  level: 'debug'
+  filename: 'inventory_srv.log'
+  max_size: 200
+  max_age: 30
+  max_backups: 7
+redis:
+  host: 127.0.0.1
+  port: 6379

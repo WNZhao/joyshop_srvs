@@ -1,7 +1,7 @@
 nacos:
   host: 192.168.1.2
   port: 8848
-  namespace: 'a5d97b00-e809-4caf-bed8-35b20e99eb62'
+  namespace: 'ab1da278a-9f12-416e-9da9-7a2a87892d7e'
   timeout: 5000
   logDir: './tmp/log'
   cacheDir: './tmp/cache'
