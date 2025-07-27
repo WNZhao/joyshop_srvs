@@ -64,6 +64,15 @@ func LoadRemoteConfig(nacosConfig *config.NacosConfig, targetConfig interface{})
 		LogLevel:            nacosConfig.LogLevel,
 	}
 
+	// 如果配置了用户名和密码，则设置认证信息
+	if nacosConfig.Username != "" && nacosConfig.Password != "" {
+		cc.Username = nacosConfig.Username
+		cc.Password = nacosConfig.Password
+		zap.S().Infof("使用 Nacos 认证: Username=%s", nacosConfig.Username)
+	} else {
+		zap.S().Info("未配置 Nacos 认证信息，使用匿名访问")
+	}
+
 	zap.S().Infof("正在连接 Nacos 服务器: %s:%d", sc[0].IpAddr, sc[0].Port)
 	client, err := clients.NewConfigClient(
 		vo.NacosClientParam{

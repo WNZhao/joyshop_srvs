@@ -1,8 +1,8 @@
 /*
  * @Author: Will nanan_zhao@163.com
  * @Date: 2025-05-09 09:55:55
- * @LastEditors: Will nanan_zhao@163.com
- * @LastEditTime: 2025-05-09 10:17:40
+ * @LastEditors: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
+ * @LastEditTime: 2025-07-26 13:44:58
  * @FilePath: /joyshop_srvs/user_srv/tests/user_test.go
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -146,9 +146,11 @@ func TestGetUserList(t *testing.T) {
 func TestCreateUser(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		rsp, err := userClient.CreateUser(context.Background(), &proto.CreateUserInfo{
-			Nickname: fmt.Sprintf("bobby%d", i),
-			Mobile:   fmt.Sprintf("1878222222%d", i),
+			Nickname: fmt.Sprintf("testuser%d", i),
+			Mobile:   generateRandomMobile(),
 			Password: "admin123",
+			Email:    generateRandomEmail(),
+			Username: generateRandomUsername(),
 		})
 		if err != nil {
 			t.Errorf("创建用户失败: %v", err)
@@ -172,8 +174,23 @@ func TestGetUserByMobile(t *testing.T) {
 
 // 测试根据ID获取用户
 func TestGetUserById(t *testing.T) {
+	// 先创建一个用户，然后根据ID获取
+	createRsp, err := userClient.CreateUser(context.Background(), &proto.CreateUserInfo{
+		Password: "test123",
+		Mobile:   generateRandomMobile(),
+		Email:    generateRandomEmail(),
+		Nickname: generateRandomNickname(),
+		Username: generateRandomUsername(),
+		Birthday: uint64(time.Now().Unix()),
+	})
+	if err != nil {
+		t.Errorf("创建用户失败: %v", err)
+		return
+	}
+
+	// 根据ID获取用户
 	rsp, err := userClient.GetUserById(context.Background(), &proto.IdRequest{
-		Id: 1,
+		Id: createRsp.Id,
 	})
 	if err != nil {
 		t.Errorf("根据ID获取用户失败: %v", err)

@@ -41,6 +41,9 @@ func initNacosConfig() error {
 	}
 
 	// 创建 Nacos 客户端
+	zap.S().Infof("Nacos 配置信息: Host=%s, Port=%d, Namespace=%s, DataId=%s, Group=%s",
+		nacosConfig.Host, nacosConfig.Port, nacosConfig.Namespace, nacosConfig.DataId, nacosConfig.Group)
+
 	sc := []constant.ServerConfig{
 		{
 			IpAddr: nacosConfig.Host,
@@ -56,6 +59,18 @@ func initNacosConfig() error {
 		CacheDir:            nacosConfig.CacheDir,
 		LogLevel:            nacosConfig.LogLevel,
 	}
+
+	// 如果配置了用户名和密码，则设置认证信息
+	if nacosConfig.Username != "" && nacosConfig.Password != "" {
+		cc.Username = nacosConfig.Username
+		cc.Password = nacosConfig.Password
+		zap.S().Infof("使用 Nacos 认证: Username=%s", nacosConfig.Username)
+	} else {
+		zap.S().Info("未配置 Nacos 认证信息，使用匿名访问")
+	}
+
+	zap.S().Infof("ServerConfig: %+v", sc)
+	zap.S().Infof("ClientConfig: %+v", cc)
 
 	client, err := clients.NewConfigClient(
 		vo.NacosClientParam{
@@ -78,7 +93,7 @@ func initNacosConfig() error {
 
 	// 使用 viper 解析配置内容
 	v := viper.New()
-	v.SetConfigType("json") // 设置为 JSON 格式
+	v.SetConfigType("yaml")
 	if err := v.ReadConfig(bytes.NewReader([]byte(content))); err != nil {
 		return err
 	}
@@ -99,7 +114,7 @@ func initNacosConfig() error {
 
 			// 使用 viper 解析新的配置内容
 			v := viper.New()
-			v.SetConfigType("json") // 设置为 JSON 格式
+			v.SetConfigType("yaml")
 			if err := v.ReadConfig(bytes.NewReader([]byte(data))); err != nil {
 				zap.S().Errorf("读取新的配置内容失败: %v", err)
 				return
@@ -122,23 +137,30 @@ func initNacosConfig() error {
 
 // loadLocalNacosConfig 加载本地 Nacos 配置
 func loadLocalNacosConfig() (*config.NacosConfig, error) {
-	configName := "config-develop.yaml"
+	configName := "nacos-dev.yaml"
 	if os.Getenv("APP_ENV") == "production" {
-		configName = "config-prod.yaml"
+		configName = "nacos-prod.yaml"
 	}
 
+	configPath := filepath.Join("config", configName)
+	zap.S().Infof("正在加载 Nacos 配置文件: %s", configPath)
+
 	v := viper.New()
-	v.SetConfigFile(filepath.Join("config", configName))
+	v.SetConfigFile(configPath)
 	v.SetConfigType("yaml")
 
 	if err := v.ReadInConfig(); err != nil {
+		zap.S().Errorf("读取 Nacos 配置文件失败: %v", err)
 		return nil, err
 	}
 
 	var nacosConfig config.NacosConfig
 	if err := v.UnmarshalKey("nacos", &nacosConfig); err != nil {
+		zap.S().Errorf("解析 Nacos 配置失败: %v", err)
 		return nil, err
 	}
+
+	zap.S().Infof("成功解析 Nacos 配置: %+v", nacosConfig)
 
 	// 根据环境变量设置 group
 	if os.Getenv("APP_ENV") == "production" {
