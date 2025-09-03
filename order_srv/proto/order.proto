@@ -88,7 +88,7 @@ message CartItemRequest {
     int32 goods_id = 3;
     string goods_name = 4;
     string goods_image = 5;
-    float goods_price = 6;
+    float goods_price = 6; //占位，冗余
     int32 nums = 7;
     bool checked = 8;
 }

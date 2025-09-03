@@ -43,6 +43,9 @@ func main() {
 	// 初始化 Consul
 	global.ConsulClient = initialize.InitConsul()
 
+	// 初始化服务客户端
+	initialize.InitServiceClients()
+
 	// 创建 gRPC 服务器
 	server := grpc.NewServer()
 
@@ -84,7 +87,10 @@ func main() {
 		zap.S().Errorf("从 Consul 注销服务失败: %v", err)
 	}
 
+	// 关闭服务客户端连接
+	initialize.CloseServiceClients()
+
 	// 优雅关闭
 	server.GracefulStop()
-	zap.S().Info("库存服务已关闭")
+	zap.S().Info("订单服务已关闭")
 }

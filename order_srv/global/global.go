@@ -14,13 +14,16 @@ import (
 	"github.com/hashicorp/consul/api"
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 	"gorm.io/gorm"
 )
 
 var (
-	DB           *gorm.DB
-	Logger       *zap.SugaredLogger
-	ServerConfig *config.ServerConfig
-	ConsulClient *api.Client
-	RedisClient  *redis.Client
+	DB              *gorm.DB
+	Logger          *zap.SugaredLogger
+	ServerConfig    *config.ServerConfig
+	ConsulClient    *api.Client
+	RedisClient     *redis.Client
+	GoodsClient     *grpc.ClientConn
+	InventoryClient *grpc.ClientConn
 )

@@ -118,6 +118,8 @@ func TestMain(m *testing.M) {
 
 // 测试获取用户列表
 func TestGetUserList(t *testing.T) {
+	t.Log(TestScenarios.UserLogin)
+	
 	rsp, err := userClient.GetUserList(context.Background(), &proto.PageInfo{
 		Page:     1,
 		PageSize: 10,
@@ -126,134 +128,187 @@ func TestGetUserList(t *testing.T) {
 		t.Errorf("获取用户列表失败: %v", err)
 		return
 	}
+	
+	// 验证返回的用户数量应该大于0
+	if len(rsp.Data) == 0 {
+		t.Error("用户列表为空")
+		return
+	}
+	
+	t.Logf("获取到用户列表，总数: %d", rsp.Total)
 	for _, user := range rsp.Data {
-		t.Logf("用户信息 - 手机号: %s, 昵称: %s", user.Mobile, user.Nickname)
+		t.Logf("用户信息 - ID: %d, 用户名: %s, 手机号: %s, 昵称: %s, 角色: %d", 
+			user.Id, user.Username, user.Mobile, user.Nickname, user.Role)
 
-		// 检查密码
+		// 使用真实密码检查（统一为123456）
 		checkRsp, err := userClient.CheckPassword(context.Background(), &proto.PasswordCheckInof{
-			Password:        "test123",
+			Password:        "123456",  // 使用真实密码
 			EncryptPassword: user.Password,
 		})
 		if err != nil {
-			t.Errorf("检查密码失败: %v", err)
+			t.Errorf("检查用户ID %d密码失败: %v", user.Id, err)
 			continue
 		}
-		t.Logf("密码验证结果: %v", checkRsp.Success)
+		t.Logf("用户ID %d 密码验证结果: %v", user.Id, checkRsp.Success)
 	}
 }
 
 // 测试创建单个用户
 func TestCreateUser(t *testing.T) {
-	for i := 0; i < 10; i++ {
-		rsp, err := userClient.CreateUser(context.Background(), &proto.CreateUserInfo{
-			Nickname: fmt.Sprintf("testuser%d", i),
-			Mobile:   generateRandomMobile(),
-			Password: "admin123",
-			Email:    generateRandomEmail(),
-			Username: generateRandomUsername(),
-		})
-		if err != nil {
-			t.Errorf("创建用户失败: %v", err)
-			continue
-		}
-		t.Logf("创建用户成功，ID: %d", rsp.Id)
+	t.Log(TestScenarios.UserRegistration)
+	
+	// 使用预定义的测试用户数据创建用户
+	testUser := NewTestUser
+	rsp, err := userClient.CreateUser(context.Background(), &proto.CreateUserInfo{
+		Nickname: testUser.Nickname,
+		Mobile:   testUser.Mobile,
+		Password: testUser.Password,
+		Email:    testUser.Email,
+		Username: testUser.Username,
+	})
+	if err != nil {
+		t.Errorf("创建用户失败: %v", err)
+		return
+	}
+	t.Logf("创建用户成功 - ID: %d, 用户名: %s, 昵称: %s", rsp.Id, testUser.Username, testUser.Nickname)
+	
+	// 验证创建的用户信息
+	getRsp, err := userClient.GetUserById(context.Background(), &proto.IdRequest{Id: rsp.Id})
+	if err != nil {
+		t.Errorf("获取新创建的用户信息失败: %v", err)
+		return
+	}
+	
+	if getRsp.Username != testUser.Username {
+		t.Errorf("用户名不匹配: 期望 %s, 实际 %s", testUser.Username, getRsp.Username)
+	}
+	if getRsp.Mobile != testUser.Mobile {
+		t.Errorf("手机号不匹配: 期望 %s, 实际 %s", testUser.Mobile, getRsp.Mobile)
 	}
 }
 
 // 测试根据手机号获取用户
 func TestGetUserByMobile(t *testing.T) {
+	t.Log("测试根据手机号获取用户")
+	
+	// 使用预定义的测试用户手机号
+	testUser := RegularUsers[0] // 张三
 	rsp, err := userClient.GetUserByMobile(context.Background(), &proto.MobileRequest{
-		Mobile: "18782222220",
+		Mobile: testUser.Mobile,
 	})
 	if err != nil {
 		t.Errorf("根据手机号获取用户失败: %v", err)
 		return
 	}
-	t.Logf("获取到的用户信息: %+v", rsp)
+	
+	// 验证返回的用户信息
+	if rsp.Mobile != testUser.Mobile {
+		t.Errorf("手机号不匹配: 期望 %s, 实际 %s", testUser.Mobile, rsp.Mobile)
+	}
+	if rsp.Username != testUser.Username {
+		t.Errorf("用户名不匹配: 期望 %s, 实际 %s", testUser.Username, rsp.Username)
+	}
+	
+	t.Logf("获取到的用户信息 - ID: %d, 用户名: %s, 昵称: %s, 手机号: %s", 
+		rsp.Id, rsp.Username, rsp.Nickname, rsp.Mobile)
 }
 
 // 测试根据ID获取用户
 func TestGetUserById(t *testing.T) {
-	// 先创建一个用户，然后根据ID获取
-	createRsp, err := userClient.CreateUser(context.Background(), &proto.CreateUserInfo{
-		Password: "test123",
-		Mobile:   generateRandomMobile(),
-		Email:    generateRandomEmail(),
-		Nickname: generateRandomNickname(),
-		Username: generateRandomUsername(),
-		Birthday: uint64(time.Now().Unix()),
-	})
-	if err != nil {
-		t.Errorf("创建用户失败: %v", err)
-		return
-	}
-
-	// 根据ID获取用户
+	t.Log("测试根据ID获取用户")
+	
+	// 使用预定义的测试用户ID
+	testUser := RegularUsers[1] // 李四
 	rsp, err := userClient.GetUserById(context.Background(), &proto.IdRequest{
-		Id: createRsp.Id,
+		Id: testUser.ID,
 	})
 	if err != nil {
 		t.Errorf("根据ID获取用户失败: %v", err)
 		return
 	}
-	t.Logf("获取到的用户信息: %+v", rsp)
+	
+	// 验证返回的用户信息
+	if rsp.Id != testUser.ID {
+		t.Errorf("用户ID不匹配: 期望 %d, 实际 %d", testUser.ID, rsp.Id)
+	}
+	if rsp.Username != testUser.Username {
+		t.Errorf("用户名不匹配: 期望 %s, 实际 %s", testUser.Username, rsp.Username)
+	}
+	if rsp.Mobile != testUser.Mobile {
+		t.Errorf("手机号不匹配: 期望 %s, 实际 %s", testUser.Mobile, rsp.Mobile)
+	}
+	
+	t.Logf("获取到的用户信息 - ID: %d, 用户名: %s, 昵称: %s, 手机号: %s, 角色: %d", 
+		rsp.Id, rsp.Username, rsp.Nickname, rsp.Mobile, rsp.Role)
 }
 
 // 测试更新用户信息
 func TestUpdateUser(t *testing.T) {
-	// 先创建一个用户
-	createRsp, err := userClient.CreateUser(context.Background(), &proto.CreateUserInfo{
-		Password: "test123",
-		Mobile:   generateRandomMobile(),
-		Email:    generateRandomEmail(),
-		Nickname: generateRandomNickname(),
-		Username: generateRandomUsername(),
-		Birthday: uint64(time.Now().Unix()),
-	})
-	if err != nil {
-		t.Errorf("创建用户失败: %v", err)
-		return
-	}
-	t.Logf("创建用户成功，ID: %d", createRsp.Id)
-
+	t.Log(TestScenarios.UserUpdate)
+	
+	// 使用预定义的测试用户
+	testUser := RegularUsers[2] // 王五
+	updatedNickname := "更新后的昵称"
+	updatedEmail := "updated@example.com"
+	
 	// 更新用户信息
-	_, err = userClient.UpdateUser(context.Background(), &proto.UpdateUserInfo{
-		Id:       createRsp.Id,
-		Nickname: generateRandomNickname(),
-		Email:    generateRandomEmail(),
-		Birthday: uint64(time.Now().AddDate(0, 0, 1).Unix()),
+	_, err := userClient.UpdateUser(context.Background(), &proto.UpdateUserInfo{
+		Id:       testUser.ID,
+		Nickname: updatedNickname,
+		Email:    updatedEmail,
+		Birthday: uint64(time.Now().Unix()),
 	})
 	if err != nil {
 		t.Errorf("更新用户失败: %v", err)
 		return
 	}
-	t.Log("更新用户成功")
+	t.Logf("更新用户成功 - ID: %d", testUser.ID)
 
 	// 验证更新结果
-	getRsp, err := userClient.GetUserById(context.Background(), &proto.IdRequest{Id: createRsp.Id})
+	getRsp, err := userClient.GetUserById(context.Background(), &proto.IdRequest{Id: testUser.ID})
 	if err != nil {
 		t.Errorf("获取更新后的用户信息失败: %v", err)
 		return
 	}
-	t.Logf("更新后的用户信息: 昵称=%s, 邮箱=%s", getRsp.Nickname, getRsp.Email)
+	
+	// 验证更新的字段
+	if getRsp.Nickname != updatedNickname {
+		t.Errorf("昵称更新失败: 期望 %s, 实际 %s", updatedNickname, getRsp.Nickname)
+	}
+	if getRsp.Email != updatedEmail {
+		t.Errorf("邮箱更新失败: 期望 %s, 实际 %s", updatedEmail, getRsp.Email)
+	}
+	
+	t.Logf("更新后的用户信息: ID=%d, 昵称=%s, 邮箱=%s", getRsp.Id, getRsp.Nickname, getRsp.Email)
 }
 
 // 测试删除用户
 func TestDeleteUser(t *testing.T) {
-	// 先创建一个用户
+	t.Log(TestScenarios.UserDelete)
+	
+	// 先创建一个测试用户用于删除
+	testUser := TestUserConstants{
+		Username: "delete_test_user",
+		Password: "123456",
+		Mobile:   "19900000000",
+		Email:    "delete_test@example.com",
+		Nickname: "待删除用户",
+		Role:     1,
+	}
+	
 	createRsp, err := userClient.CreateUser(context.Background(), &proto.CreateUserInfo{
-		Password: "test123",
-		Mobile:   generateRandomMobile(),
-		Email:    generateRandomEmail(),
-		Nickname: generateRandomNickname(),
-		Username: generateRandomUsername(),
+		Password: testUser.Password,
+		Mobile:   testUser.Mobile,
+		Email:    testUser.Email,
+		Nickname: testUser.Nickname,
+		Username: testUser.Username,
 		Birthday: uint64(time.Now().Unix()),
 	})
 	if err != nil {
-		t.Errorf("创建用户失败: %v", err)
+		t.Errorf("创建测试用户失败: %v", err)
 		return
 	}
-	t.Logf("创建用户成功，ID: %d", createRsp.Id)
+	t.Logf("创建测试用户成功，ID: %d", createRsp.Id)
 
 	// 删除用户
 	_, err = userClient.DeleteUser(context.Background(), &proto.IdRequest{Id: createRsp.Id})
@@ -310,4 +365,128 @@ func generateRandomNickname() string {
 	adjectives := []string{"快乐的", "聪明的", "勇敢的", "善良的", "可爱的", "活泼的", "温柔的", "优雅的"}
 	nouns := []string{"小猫", "小狗", "小兔", "小熊", "小鹿", "小象", "小马", "小羊"}
 	return adjectives[r.Intn(len(adjectives))] + nouns[r.Intn(len(nouns))]
+}
+
+// 测试管理员登录
+func TestAdminLogin(t *testing.T) {
+	t.Log(TestScenarios.AdminLogin)
+	
+	// 测试管理员用户登录
+	adminUser := AdminUser
+	rsp, err := userClient.GetUserByMobile(context.Background(), &proto.MobileRequest{
+		Mobile: adminUser.Mobile,
+	})
+	if err != nil {
+		t.Errorf("获取管理员用户失败: %v", err)
+		return
+	}
+	
+	// 验证管理员角色
+	if rsp.Role != adminUser.Role {
+		t.Errorf("管理员角色不正确: 期望 %d, 实际 %d", adminUser.Role, rsp.Role)
+	}
+	
+	// 验证管理员密码
+	checkRsp, err := userClient.CheckPassword(context.Background(), &proto.PasswordCheckInof{
+		Password:        adminUser.Password,
+		EncryptPassword: rsp.Password,
+	})
+	if err != nil {
+		t.Errorf("检查管理员密码失败: %v", err)
+		return
+	}
+	
+	if !checkRsp.Success {
+		t.Error("管理员密码验证失败")
+	}
+	
+	t.Logf("管理员登录验证成功 - ID: %d, 用户名: %s, 角色: %d", rsp.Id, rsp.Username, rsp.Role)
+}
+
+// 测试VIP用户功能
+func TestVIPUserFeatures(t *testing.T) {
+	t.Log(TestScenarios.VIPUserLogin)
+	
+	// 测试VIP用户
+	for i, vipUser := range VIPUsers {
+		t.Run(fmt.Sprintf("VIP用户%d", i+1), func(t *testing.T) {
+			rsp, err := userClient.GetUserById(context.Background(), &proto.IdRequest{
+				Id: vipUser.ID,
+			})
+			if err != nil {
+				t.Errorf("获取VIP用户失败: %v", err)
+				return
+			}
+			
+			// 验证VIP用户信息
+			if rsp.Id != vipUser.ID {
+				t.Errorf("VIP用户ID不匹配: 期望 %d, 实际 %d", vipUser.ID, rsp.Id)
+			}
+			if rsp.Username != vipUser.Username {
+				t.Errorf("VIP用户名不匹配: 期望 %s, 实际 %s", vipUser.Username, rsp.Username)
+			}
+			
+			// 验证密码
+			checkRsp, err := userClient.CheckPassword(context.Background(), &proto.PasswordCheckInof{
+				Password:        vipUser.Password,
+				EncryptPassword: rsp.Password,
+			})
+			if err != nil {
+				t.Errorf("检查VIP用户密码失败: %v", err)
+				return
+			}
+			
+			if !checkRsp.Success {
+				t.Errorf("VIP用户密码验证失败")
+			}
+			
+			t.Logf("VIP用户验证成功 - ID: %d, 用户名: %s, 昵称: %s", rsp.Id, rsp.Username, rsp.Nickname)
+		})
+	}
+}
+
+// 测试批量用户信息验证
+func TestBatchUserValidation(t *testing.T) {
+	t.Log("批量用户信息验证测试")
+	
+	// 验证所有预定义用户
+	allUsers := AllTestUsers()
+	for _, testUser := range allUsers {
+		t.Run(fmt.Sprintf("用户ID_%d", testUser.ID), func(t *testing.T) {
+			rsp, err := userClient.GetUserById(context.Background(), &proto.IdRequest{
+				Id: testUser.ID,
+			})
+			if err != nil {
+				t.Errorf("获取用户ID %d 失败: %v", testUser.ID, err)
+				return
+			}
+			
+			// 基础信息验证
+			if rsp.Username != testUser.Username {
+				t.Errorf("用户名不匹配: 期望 %s, 实际 %s", testUser.Username, rsp.Username)
+			}
+			if rsp.Mobile != testUser.Mobile {
+				t.Errorf("手机号不匹配: 期望 %s, 实际 %s", testUser.Mobile, rsp.Mobile)
+			}
+			if rsp.Role != testUser.Role {
+				t.Errorf("用户角色不匹配: 期望 %d, 实际 %d", testUser.Role, rsp.Role)
+			}
+			
+			// 密码验证
+			checkRsp, err := userClient.CheckPassword(context.Background(), &proto.PasswordCheckInof{
+				Password:        testUser.Password,
+				EncryptPassword: rsp.Password,
+			})
+			if err != nil {
+				t.Errorf("检查用户ID %d 密码失败: %v", testUser.ID, err)
+				return
+			}
+			
+			if !checkRsp.Success {
+				t.Errorf("用户ID %d 密码验证失败", testUser.ID)
+			}
+		})
+	}
+	
+	t.Logf("批量验证完成，共验证 %d 个用户", len(allUsers))
 }

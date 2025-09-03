@@ -17,7 +17,7 @@ type Inventory struct {
 	BaseModel
 	GoodsID int32 `json:"goods_id" gorm:"type:int;not null;index:idx_goods_id;comment:商品ID"` // 商品ID
 	Stock   int32 `json:"stock" gorm:"type:int;not null;default:0;comment:库存数量"`
-	Version int32 `json:"version" gorm:"type:int;not null;default:0;comment:版本号"` // 分布式锁使用的版本号
+	Version int32 `json:"version" gorm:"type:int;not null;default:0;comment:版本号"` // 分布式锁使用的版本号（乐观锁）
 }
 
 // 哪个用户，哪个商品，哪个订单

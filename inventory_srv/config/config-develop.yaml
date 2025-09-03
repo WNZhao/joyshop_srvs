@@ -1,9 +1,9 @@
 name: inventory_srv
-host: 192.168.1.7
+host: 192.168.1.2
 port: 50052
 tags: ['inventory', 'srv']
 consul:
-  host: 192.168.1.7
+  host: 192.168.1.2
   port: 8500
 mysql:
   host: 127.0.0.1
