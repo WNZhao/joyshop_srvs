@@ -384,21 +384,8 @@ Temporary Items
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
-# 保留 goods_srv/tmp 目录但忽略其内容
-goods_srv/tmp/*
-!goods_srv/tmp/.gitkeep
-
-# 忽略 goods_srv/tmp 和 user_srv/tmp
-goods_srv/tmp/
-user_srv/tmp/*
-
-# 保留 tmp 目录
-!goods_srv/tmp/.gitkeep
-!user_srv/tmp/.gitkeep
-
-# 保留inventory_srv/tmp目录但忽略其中的所有文件和子目录
-inventory_srv/tmp/**
-!inventory_srv/tmp/.gitkeep
+# 忽略所有服务的 tmp 目录
+*/tmp/
 
 # Claude 对话记录和工作文档
 .claude/
