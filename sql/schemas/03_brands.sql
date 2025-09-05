@@ -1,3 +1,9 @@
+-- 修复后的商品数据
+-- 设置字符集和SQL模式
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+
 -- 品牌测试数据
 -- 创建各个分类的知名品牌数据
 
@@ -11,46 +17,46 @@ ALTER TABLE brand AUTO_INCREMENT = 1;
 -- 插入品牌数据
 INSERT INTO brand (id, name, logo, `desc`, created_at, updated_at) VALUES
 -- 电子数码品牌
-(1, 'Apple', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/apple.png', '苹果公司，创新科技的引领者', NOW(), NOW()),
-(2, 'HUAWEI', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/huawei.png', '华为技术有限公司，全球领先的ICT基础设施和智能终端提供商', NOW(), NOW()),
-(3, 'Xiaomi', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/xiaomi.png', '小米集团，以手机、智能硬件和IoT平台为核心的互联网公司', NOW(), NOW()),
-(4, 'Samsung', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/samsung.png', '三星电子，全球科技企业领导者', NOW(), NOW()),
-(5, 'Lenovo', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/lenovo.png', '联想集团，全球化的科技公司', NOW(), NOW()),
-(6, 'Dell', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/dell.png', '戴尔科技集团，全球领先的技术解决方案提供商', NOW(), NOW()),
-(7, 'Sony', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/sony.png', '索尼公司，娱乐科技的创新者', NOW(), NOW()),
-(8, 'Canon', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/canon.png', '佳能公司，影像技术的领导者', NOW(), NOW()),
+(1, 'Apple', 'placeholder_logo_apple.png', '苹果公司，创新科技的引领者', NOW(), NOW()),
+(2, 'HUAWEI', 'placeholder_logo_huawei.png', '华为技术有限公司，全球领先的ICT基础设施和智能终端提供商', NOW(), NOW()),
+(3, 'Xiaomi', 'placeholder_logo_xiaomi.png', '小米集团，以手机、智能硬件和IoT平台为核心的互联网公司', NOW(), NOW()),
+(4, 'Samsung', 'placeholder_logo_samsung.png', '三星电子，全球科技企业领导者', NOW(), NOW()),
+(5, 'Lenovo', 'placeholder_logo_lenovo.png', '联想集团，全球化的科技公司', NOW(), NOW()),
+(6, 'Dell', 'placeholder_logo_dell.png', '戴尔科技集团，全球领先的技术解决方案提供商', NOW(), NOW()),
+(7, 'Sony', 'placeholder_logo_sony.png', '索尼公司，娱乐科技的创新者', NOW(), NOW()),
+(8, 'Canon', 'placeholder_logo_canon.png', '佳能公司，影像技术的领导者', NOW(), NOW()),
 
 -- 服装品牌
-(11, 'Nike', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/nike.png', '耐克公司，全球知名运动品牌', NOW(), NOW()),
-(12, 'Adidas', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/adidas.png', '阿迪达斯，德国运动用品制造商', NOW(), NOW()),
-(13, 'UNIQLO', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/uniqlo.png', '优衣库，日本服装品牌', NOW(), NOW()),
-(14, 'ZARA', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/zara.png', 'ZARA，西班牙时装连锁品牌', NOW(), NOW()),
-(15, 'H&M', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/hm.png', 'H&M，瑞典快时尚品牌', NOW(), NOW()),
-(16, 'Levi\'s', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/levis.png', 'Levi\'s，美国牛仔裤品牌', NOW(), NOW()),
+(11, 'Nike', 'placeholder_logo_nike.png', '耐克公司，全球知名运动品牌', NOW(), NOW()),
+(12, 'Adidas', 'placeholder_logo_adidas.png', '阿迪达斯，德国运动用品制造商', NOW(), NOW()),
+(13, 'UNIQLO', 'placeholder_logo_uniqlo.png', '优衣库，日本服装品牌', NOW(), NOW()),
+(14, 'ZARA', 'placeholder_logo_zara.png', 'ZARA，西班牙时装连锁品牌', NOW(), NOW()),
+(15, 'H&M', 'placeholder_logo_hm.png', 'H&M，瑞典快时尚品牌', NOW(), NOW()),
+(16, 'Levis', 'placeholder_logo_levis.png', 'Levis，美国牛仔裤品牌', NOW(), NOW()),
 
 -- 家居生活品牌
-(21, 'IKEA', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/ikea.png', '宜家家居，瑞典家具零售企业', NOW(), NOW()),
-(22, '全友家居', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/quanyou.png', '全友家私，中国家具行业领军企业', NOW(), NOW()),
-(23, '美的', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/midea.png', '美的集团，中国家电制造企业', NOW(), NOW()),
-(24, '海尔', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/haier.png', '海尔集团，中国家电企业', NOW(), NOW()),
+(21, 'IKEA', 'placeholder_logo_ikea.png', '宜家家居，瑞典家具零售企业', NOW(), NOW()),
+(22, '全友家居', 'placeholder_logo_quanyou.png', '全友家私，中国家具行业领军企业', NOW(), NOW()),
+(23, '美的', 'placeholder_logo_midea.png', '美的集团，中国家电制造企业', NOW(), NOW()),
+(24, '海尔', 'placeholder_logo_haier.png', '海尔集团，中国家电企业', NOW(), NOW()),
 
 -- 图书出版品牌
-(31, '人民邮电出版社', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/ptpress.png', '人民邮电出版社，专业IT图书出版社', NOW(), NOW()),
-(32, '机械工业出版社', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/cmpedu.png', '机械工业出版社，综合性出版社', NOW(), NOW()),
-(33, '晨光文具', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/chenguang.png', '上海晨光文具股份有限公司', NOW(), NOW()),
+(31, '人民邮电出版社', 'placeholder_logo_ptpress.png', '人民邮电出版社，专业IT图书出版社', NOW(), NOW()),
+(32, '机械工业出版社', 'placeholder_logo_cmpedu.png', '机械工业出版社，综合性出版社', NOW(), NOW()),
+(33, '晨光文具', 'placeholder_logo_chenguang.png', '上海晨光文具股份有限公司', NOW(), NOW()),
 
 -- 运动户外品牌
-(41, 'Under Armour', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/underarmour.png', '安德玛，美国运动品牌', NOW(), NOW()),
-(42, 'New Balance', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/newbalance.png', '新百伦，美国运动品牌', NOW(), NOW()),
-(43, 'The North Face', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/tnf.png', '北面，美国户外品牌', NOW(), NOW()),
+(41, 'Under Armour', 'placeholder_logo_underarmour.png', '安德玛，美国运动品牌', NOW(), NOW()),
+(42, 'New Balance', 'placeholder_logo_newbalance.png', '新百伦，美国运动品牌', NOW(), NOW()),
+(43, 'The North Face', 'placeholder_logo_tnf.png', '北面，美国户外品牌', NOW(), NOW()),
 
 -- 美妆个护品牌
-(51, 'L\'Oréal', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/loreal.png', '欧莱雅集团，全球化妆品领导者', NOW(), NOW()),
-(52, 'Estée Lauder', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/esteelauder.png', '雅诗兰黛，美国化妆品品牌', NOW(), NOW()),
-(53, 'SK-II', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/skii.png', 'SK-II，日本护肤品牌', NOW(), NOW()),
+(51, 'LOreal', 'placeholder_logo_loreal.png', '欧莱雅集团，全球化妆品领导者', NOW(), NOW()),
+(52, 'Estée Lauder', 'placeholder_logo_esteelauder.png', '雅诗兰黛，美国化妆品品牌', NOW(), NOW()),
+(53, 'SK-II', 'placeholder_logo_skii.png', 'SK-II，日本护肤品牌', NOW(), NOW()),
 
 -- 自有品牌
-(61, 'JoyShop', 'https://cdn.jsdelivr.net/gh/joyshop/brand-logos/joyshop.png', 'JoyShop自有品牌，精选优质商品', NOW(), NOW());
+(61, 'JoyShop', 'placeholder_logo_joyshop.png', 'JoyShop自有品牌，精选优质商品', NOW(), NOW());
 
 -- 插入分类品牌关联数据
 INSERT INTO category_brand (category_id, brand_id, created_at, updated_at) VALUES
@@ -81,7 +87,7 @@ INSERT INTO category_brand (category_id, brand_id, created_at, updated_at) VALUE
 (21, 13, NOW(), NOW()), -- UNIQLO - 男装
 (21, 14, NOW(), NOW()), -- ZARA - 男装  
 (21, 15, NOW(), NOW()), -- H&M - 男装
-(21, 16, NOW(), NOW()), -- Levi's - 男装
+(21, 16, NOW(), NOW()), -- Levis - 男装
 
 -- 女装品牌
 (22, 13, NOW(), NOW()), -- UNIQLO - 女装
@@ -114,14 +120,16 @@ INSERT INTO category_brand (category_id, brand_id, created_at, updated_at) VALUE
 (54, 43, NOW(), NOW()), -- The North Face - 户外用品
 
 -- 美妆个护品牌关联  
-(61, 51, NOW(), NOW()), -- L'Oréal - 护肤
+(61, 51, NOW(), NOW()), -- LOreal - 护肤
 (61, 52, NOW(), NOW()), -- Estée Lauder - 护肤
 (61, 53, NOW(), NOW()), -- SK-II - 护肤
 
-(62, 51, NOW(), NOW()), -- L'Oréal - 彩妆
+(62, 51, NOW(), NOW()), -- LOreal - 彩妆
 (62, 52, NOW(), NOW()); -- Estée Lauder - 彩妆
 
 -- 说明：
 -- 品牌涵盖各主要分类，包含国际知名品牌和国内品牌
 -- category_brand 表建立了分类和品牌的多对多关系
 -- 一个品牌可以关联多个分类，一个分类可以有多个品牌
+-- 恢复外键检查
+SET FOREIGN_KEY_CHECKS = 1;
