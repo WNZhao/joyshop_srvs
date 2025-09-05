@@ -10,7 +10,7 @@ package config
 
 type ServerConfig struct {
 	ConsulInfo ConsulConfig `mapstructure:"consul"`
-	DBConfig   DBConfig     `mapstructure:"db"`
+	DBConfig   DBConfig     `mapstructure:"mysql"`
 	ServerInfo ServerInfo   `mapstructure:"server"`
 }
 

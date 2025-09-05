@@ -3,9 +3,12 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"goods_srv/global"
 	"goods_srv/model"
 	"goods_srv/proto"
 
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -99,6 +102,56 @@ func (s *GoodsServer) DeleteGoods(ctx context.Context, req *proto.DeleteGoodsInf
 		return nil, err
 	}
 	return &emptypb.Empty{}, nil
+}
+
+// BatchGetGoods 批量获取商品信息
+func (s *GoodsServer) BatchGetGoods(ctx context.Context, req *proto.BatchGoodsIdInfo) (*proto.GoodsListResponse, error) {
+	global.Logger.Infof("批量获取商品信息，商品ID列表: %v", req.Id)
+
+	if len(req.Id) == 0 {
+		return &proto.GoodsListResponse{
+			Total: 0,
+			Data:  []*proto.GoodsInfoResponse{},
+		}, nil
+	}
+
+	// 从数据库批量查询商品
+	var goods []model.Goods
+	if err := global.DB.Where("id IN ?", req.Id).Find(&goods).Error; err != nil {
+		global.Logger.Errorf("批量查询商品失败: %v", err)
+		return nil, status.Errorf(codes.Internal, "批量查询商品失败")
+	}
+
+	// 转换为proto格式并设置库存信息
+	var goodsList []*proto.GoodsInfoResponse
+	for _, g := range goods {
+		goodsProto := ModelToProtoGoods(&g)
+		// 从库存表获取库存信息
+		goodsProto.Stocks = s.getGoodsStockFromDB(int32(g.ID))
+		goodsList = append(goodsList, goodsProto)
+	}
+
+	global.Logger.Infof("成功批量获取商品信息，返回%d个商品", len(goodsList))
+	return &proto.GoodsListResponse{
+		Total: int32(len(goodsList)),
+		Data:  goodsList,
+	}, nil
+}
+
+// getGoodsStockFromDB 从库存数据库获取商品库存
+func (s *GoodsServer) getGoodsStockFromDB(goodsId int32) int32 {
+	// 查询库存表
+	type Inventory struct {
+		Stock int32 `gorm:"column:stock"`
+	}
+	var inv Inventory
+	
+	// 直接查询库存数据库（这里简化处理，实际应该通过库存服务）
+	err := global.DB.Raw("SELECT stock FROM joyshop_inventory.inventory WHERE goods_id = ? AND deleted_at IS NULL", goodsId).Scan(&inv).Error
+	if err != nil {
+		return 0 // 查询失败返回0库存
+	}
+	return inv.Stock
 }
 
 // GetGoodsByCategory 按分类获取商品

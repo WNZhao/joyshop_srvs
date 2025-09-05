@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 
 # 服务管理脚本
 # 用于管理 joyshop_srvs 项目中的所有微服务

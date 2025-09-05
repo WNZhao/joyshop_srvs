@@ -1,0 +1,18 @@
+2025-09-05T14:36:17.009+0700	INFO	util/config.go:48	开始从 Nacos 加载配置...
+2025-09-05T14:36:17.009+0700	INFO	util/config.go:70	正在连接 Nacos 服务器: 192.168.1.2:8848
+2025-09-05T14:36:17.010+0700	INFO	util/config.go:83	正在从 Nacos 获取配置: DataId=goods_srv, Group=dev
+2025-09-05T14:36:17.315+0700	INFO	util/config.go:108	成功从 Nacos 加载配置
+2025-09-05T14:36:17.315+0700	INFO	util/config.go:137	成功设置 Nacos 配置监听
+2025-09-05T14:36:17.315+0700	INFO	initialize/db.go:26	开始初始化数据库连接...
+2025-09-05T14:36:17.315+0700	INFO	initialize/db.go:27	数据库配置信息: Host=127.0.0.1, Port=3306, User=root, DBName=joyshop_goods
+2025-09-05T14:36:17.315+0700	INFO	initialize/db.go:55	数据库日志级别设置为: info
+2025-09-05T14:36:17.315+0700	INFO	initialize/db.go:77	正在连接数据库...
+2025-09-05T14:36:17.318+0700	INFO	initialize/db.go:83	数据库连接成功
+2025-09-05T14:36:17.318+0700	INFO	initialize/db.go:91	设置数据库连接池参数: MaxIdleConns=10, MaxOpenConns=100
+2025-09-05T14:36:17.318+0700	INFO	initialize/db.go:100	数据库初始化完成
+2025-09-05T14:36:17.318+0700	INFO	initialize/consul.go:23	Consul 地址: 192.168.1.2:8500
+2025-09-05T14:36:17.318+0700	INFO	initialize/consul.go:31	Consul 客户端初始化成功
+2025-09-05T14:36:17.319+0700	INFO	goods_srv/main.go:63	商品服务启动成功，监听地址: 192.168.1.2:50051
+2025-09-05T14:36:17.325+0700	INFO	util/consul.go:47	商品服务注册成功，ID: dabb8f04-bde9-45f0-ba76-88db6e2ce91c
+2025-09-05T14:39:49.744+0700	INFO	util/config.go:115	检测到 Nacos 配置变化: namespace=b1da278a-9f12-416e-9da9-7a2a87892d7e, group=dev, dataId=goods_srv
+2025-09-05T14:39:49.744+0700	INFO	util/config.go:128	成功更新 Nacos 配置

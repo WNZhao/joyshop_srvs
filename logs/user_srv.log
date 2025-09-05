@@ -1,0 +1,19 @@
+2025-09-05T15:13:00.433+0700	INFO	initialize/config.go:146	正在加载 Nacos 配置文件: config/nacos-dev.yaml
+2025-09-05T15:13:00.433+0700	INFO	initialize/config.go:163	成功解析 Nacos 配置: {Host:192.168.1.2 Port:8848 Namespace:b1da278a-9f12-416e-9da9-7a2a87892d7e Timeout:5000 LogDir:./tmp/log CacheDir:./tmp/cache LogLevel:debug DataId:user_srv Group:dev Username:nacos Password:nacos}
+2025-09-05T15:13:00.433+0700	INFO	initialize/config.go:44	Nacos 配置信息: Host=192.168.1.2, Port=8848, Namespace=b1da278a-9f12-416e-9da9-7a2a87892d7e, DataId=user_srv, Group=dev
+2025-09-05T15:13:00.433+0700	INFO	initialize/config.go:67	使用 Nacos 认证: Username=nacos
+2025-09-05T15:13:00.433+0700	INFO	initialize/config.go:72	ServerConfig: [{Scheme: ContextPath: IpAddr:192.168.1.2 Port:8848 GrpcPort:0}]
+2025-09-05T15:13:00.433+0700	INFO	initialize/config.go:73	ClientConfig: {TimeoutMs:5000 ListenInterval:0 BeatInterval:0 NamespaceId:b1da278a-9f12-416e-9da9-7a2a87892d7e AppName: AppKey: Endpoint: RegionId: AccessKey: SecretKey: OpenKMS:false KMSVersion: KMSv3Config:<nil> CacheDir:./tmp/cache DisableUseSnapShot:false UpdateThreadNum:0 NotLoadCacheAtStart:true UpdateCacheWhenEmpty:false Username:nacos Password:nacos LogDir:./tmp/log LogLevel:debug ContextPath: AppendToStdout:false LogSampling:<nil> LogRollingConfig:<nil> TLSCfg:{Enable:false CaFile: CertFile: KeyFile: ServerNameOverride:} AsyncUpdateService:false EndpointContextPath: EndpointQueryParams: ClusterName:}
+2025-09-05T15:13:00.637+0700	WARN	initialize/config.go:29	从 Nacos 读取配置失败，将使用本地配置: While parsing config: yaml: line 3: did not find expected key
+user_srv/initialize.InitConfig
+	/Users/walker/gitsource/github/joyshop_srvs/user_srv/initialize/config.go:29
+main.main
+	/Users/walker/gitsource/github/joyshop_srvs/user_srv/main.go:35
+runtime.main
+	/Users/walker/.go/src/runtime/proc.go:271
+2025-09-05T15:13:00.637+0700	INFO	initialize/config.go:194	成功加载本地配置: {ConsulInfo:{Host:192.168.1.2 Port:8500} DBConfig:{Host:127.0.0.1 Port:3306 User:root Password:walker123 DBName:joyshop_user} ServerInfo:{Host:192.168.1.2 Port:50054 Name:user_srv}}
+2025-09-05T15:13:00.637+0700	DEBUG	initialize/db.go:37	数据库连接信息: root:walker123@tcp(127.0.0.1:3306)/joyshop_user?charset=utf8mb4&parseTime=True&loc=Local
+2025-09-05T15:13:00.646+0700	INFO	initialize/db.go:67	数据库连接成功
+2025-09-05T15:13:00.646+0700	INFO	initialize/consul.go:22	Consul 客户端初始化成功
+2025-09-05T15:13:00.646+0700	INFO	user_srv/main.go:63	服务启动成功，监听地址: 192.168.1.2:50054
+2025-09-05T15:13:00.654+0700	INFO	util/consul.go:47	服务注册成功，ID: 62221a27-faa1-4688-b6e4-3a176f088454

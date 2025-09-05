@@ -12,11 +12,13 @@ import (
 	"goods_srv/config"
 
 	"github.com/hashicorp/consul/api"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
 var (
 	DB           *gorm.DB
+	Logger       *zap.SugaredLogger
 	ServerConfig *config.ServerConfig
 	ConsulClient *api.Client
 )

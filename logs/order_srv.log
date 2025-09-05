@@ -1,0 +1,38 @@
+2025-09-05T15:13:46.039+0700	INFO	util/config.go:48	开始从 Nacos 加载配置...
+2025-09-05T15:13:46.039+0700	INFO	util/config.go:71	使用 Nacos 认证: Username=nacos
+2025-09-05T15:13:46.039+0700	INFO	util/config.go:76	正在连接 Nacos 服务器: 192.168.1.2:8848
+2025-09-05T15:13:46.109+0700	INFO	util/config.go:89	正在从 Nacos 获取配置: DataId=order_srv, Group=dev
+2025-09-05T15:13:46.224+0700	ERROR	util/config.go:104	解析 Nacos 配置内容失败: While parsing config: yaml: line 3: did not find expected key
+order_srv/util.LoadRemoteConfig
+	/Users/walker/gitsource/github/joyshop_srvs/order_srv/util/config.go:104
+order_srv/initialize.loadNacosConfig
+	/Users/walker/gitsource/github/joyshop_srvs/order_srv/initialize/config.go:48
+order_srv/initialize.InitConfig
+	/Users/walker/gitsource/github/joyshop_srvs/order_srv/initialize/config.go:23
+main.main
+	/Users/walker/gitsource/github/joyshop_srvs/order_srv/main.go:35
+runtime.main
+	/Users/walker/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.0.darwin-amd64/src/runtime/proc.go:283
+2025-09-05T15:13:46.224+0700	WARN	initialize/config.go:24	从 Nacos 读取配置失败，将使用本地配置: While parsing config: yaml: line 3: did not find expected key
+order_srv/initialize.InitConfig
+	/Users/walker/gitsource/github/joyshop_srvs/order_srv/initialize/config.go:24
+main.main
+	/Users/walker/gitsource/github/joyshop_srvs/order_srv/main.go:35
+runtime.main
+	/Users/walker/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.0.darwin-amd64/src/runtime/proc.go:283
+2025-09-05T15:13:46.224+0700	INFO	util/config.go:17	开始从本地加载配置...
+2025-09-05T15:13:46.224+0700	INFO	util/config.go:33	成功加载本地配置
+2025-09-05T15:13:46.225+0700	INFO	initialize/db.go:26	开始初始化数据库连接...
+2025-09-05T15:13:46.225+0700	INFO	initialize/db.go:27	数据库配置信息: Host=127.0.0.1, Port=3306, User=root, DBName=joyshop_order
+2025-09-05T15:13:46.225+0700	INFO	initialize/db.go:55	数据库日志级别设置为: info
+2025-09-05T15:13:46.225+0700	INFO	initialize/db.go:77	正在连接数据库...
+2025-09-05T15:13:46.228+0700	INFO	initialize/db.go:83	数据库连接成功
+2025-09-05T15:13:46.228+0700	INFO	initialize/db.go:91	设置数据库连接池参数: MaxIdleConns=10, MaxOpenConns=100
+2025-09-05T15:13:46.228+0700	INFO	initialize/db.go:100	数据库初始化完成
+2025-09-05T15:13:46.229+0700	INFO	initialize/redis.go:33	Redis连接成功
+2025-09-05T15:13:46.229+0700	INFO	initialize/consul.go:23	Consul 地址: 192.168.1.2:8500
+2025-09-05T15:13:46.229+0700	INFO	initialize/consul.go:31	Consul 客户端初始化成功
+2025-09-05T15:13:46.231+0700	INFO	initialize/service_client.go:43	商品服务客户端连接成功: 192.168.1.2:50051
+2025-09-05T15:13:46.232+0700	INFO	initialize/service_client.go:71	库存服务客户端连接成功: 192.168.1.2:50052
+2025-09-05T15:13:46.233+0700	INFO	order_srv/main.go:69	库存服务启动成功，监听地址: 192.168.1.2:50053
+2025-09-05T15:13:46.238+0700	INFO	util/consul.go:47	库存服务注册成功，ID: 237e0333-9198-4185-a714-fda41385ebc5

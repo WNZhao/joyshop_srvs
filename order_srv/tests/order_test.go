@@ -15,7 +15,7 @@ func setupOrderService() *handler.OrderServiceServer {
 func TestCartItemAddAndList(t *testing.T) {
 	t.Log(TestScenarios.CartAdd)
 
-	initTestEnv(t)
+	initTestEnvSimple(t)
 	srv := setupOrderService()
 	ctx := context.Background()
 
@@ -62,7 +62,7 @@ func TestCartItemAddAndList(t *testing.T) {
 func TestCartItemUpdateAndDelete(t *testing.T) {
 	t.Log(TestScenarios.CartUpdate)
 
-	initTestEnv(t)
+	initTestEnvSimple(t)
 	srv := setupOrderService()
 	ctx := context.Background()
 
@@ -93,7 +93,7 @@ func TestCartItemUpdateAndDelete(t *testing.T) {
 func TestOrderCreateAndList(t *testing.T) {
 	t.Log(TestScenarios.OrderCreate)
 
-	initTestEnv(t)
+	initTestEnvSimple(t)
 	srv := setupOrderService()
 	ctx := context.Background()
 
@@ -129,7 +129,7 @@ func TestOrderCreateAndList(t *testing.T) {
 func TestOrderDetailUpdateDelete(t *testing.T) {
 	t.Log(TestScenarios.OrderDetail)
 
-	initTestEnv(t)
+	initTestEnvSimple(t)
 	srv := setupOrderService()
 	ctx := context.Background()
 
@@ -168,7 +168,7 @@ func TestOrderDetailUpdateDelete(t *testing.T) {
 func TestPredefinedCartItems(t *testing.T) {
 	t.Log("预定义购物车数据测试")
 
-	initTestEnv(t)
+	initTestEnvSimple(t)
 	srv := setupOrderService()
 	ctx := context.Background()
 
@@ -229,7 +229,7 @@ func TestPredefinedCartItems(t *testing.T) {
 func TestOrderStatusFlow(t *testing.T) {
 	t.Log(TestScenarios.PaymentFlow)
 
-	initTestEnv(t)
+	initTestEnvSimple(t)
 	srv := setupOrderService()
 	ctx := context.Background()
 
@@ -283,7 +283,7 @@ func TestOrderStatusFlow(t *testing.T) {
 func TestVIPUserOrders(t *testing.T) {
 	t.Log(TestScenarios.VIPService)
 
-	initTestEnv(t)
+	initTestEnvSimple(t)
 	srv := setupOrderService()
 	ctx := context.Background()
 
@@ -318,10 +318,10 @@ func TestVIPUserOrders(t *testing.T) {
 }
 
 // 测试订单创建场景
-func TestOrderCreationScenarios(t *testing.T) {
+func TestRunOrderCreationScenarios(t *testing.T) {
 	t.Log("订单创建场景测试")
 
-	initTestEnv(t)
+	initTestEnvSimple(t)
 	srv := setupOrderService()
 	ctx := context.Background()
 
@@ -380,7 +380,7 @@ func TestOrderCreationScenarios(t *testing.T) {
 func TestBatchCartOperations(t *testing.T) {
 	t.Log("购物车批量操作测试")
 
-	initTestEnv(t)
+	initTestEnvSimple(t)
 	srv := setupOrderService()
 	ctx := context.Background()
 

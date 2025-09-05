@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-	"time"
 
 	"order_srv/config"
 	"order_srv/global"
@@ -99,7 +98,7 @@ func TestOrderInfoCRUD(t *testing.T) {
 		Status:       "PAYING",
 		TradeNo:      "TRADE123456",
 		OrderMount:   99.99,
-		PayTime:      time.Now(),
+		PayTime:      nil, // 使用nil，让数据库设置为NULL
 		Address:      "测试地址",
 		SignerName:   "张三",
 		SingerMobile: "13800000000",

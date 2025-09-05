@@ -34,6 +34,7 @@ func GetGoodsByIds(ctx context.Context, goodsIds []int32) (map[int32]*goodspb.Go
 		goodsMap[good.Id] = good
 	}
 
+	global.Logger.Infof("成功批量获取%d个商品信息", len(goodsMap))
 	return goodsMap, nil
 }
 
