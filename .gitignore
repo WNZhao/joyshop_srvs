@@ -384,8 +384,11 @@ Temporary Items
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
-# 忽略所有服务的 tmp 目录
-*/tmp/
+# 忽略所有服务的 tmp 目录下的文件，但保留目录结构
+*/tmp/log/*
+!*/tmp/log/.gitkeep
+*/tmp/cache/*
+!*/tmp/cache/.gitkeep
 
 # Claude 对话记录和工作文档
 .claude/
