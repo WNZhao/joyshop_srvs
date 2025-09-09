@@ -102,6 +102,9 @@ message ShopCartInfoResponse {
     int32 id = 1;
     int32 user_id = 2;
     int32 goods_id = 3;
-    int32 nums = 4;
-    bool checked = 5;
+    string goods_name = 4;
+    string goods_image = 5;
+    float goods_price = 6;
+    int32 nums = 7;
+    bool checked = 8;
 }

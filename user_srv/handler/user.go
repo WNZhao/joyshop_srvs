@@ -11,6 +11,7 @@ import (
 	"user_srv/proto"
 
 	"github.com/anaskhan96/go-password-encoder"
+	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -173,6 +174,15 @@ func (s *UserServer) UpdateUser(ctx context.Context, req *proto.UpdateUserInfo) 
 func (s *UserServer) CheckPassword(ctx context.Context, req *proto.PasswordCheckInof) (*proto.CheckReponse, error) {
 	// 检查密码
 	passwordInfo := strings.Split(req.EncryptPassword, "$")
+	
+	// 检查数组长度，防止越界
+	if len(passwordInfo) < 4 {
+		zap.S().Errorf("密码格式错误: %s, 期望格式: $pbkdf2-sha512$salt$encodedPwd", req.EncryptPassword)
+		return &proto.CheckReponse{
+			Success: false,
+		}, nil
+	}
+	
 	options := &password.Options{10, 100, 32, sha512.New}
 	check := password.Verify(req.Password, passwordInfo[2], passwordInfo[3], options)
 	return &proto.CheckReponse{

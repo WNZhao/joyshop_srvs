@@ -799,8 +799,11 @@ type ShopCartInfoResponse struct {
 	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	UserId        int32                  `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	GoodsId       int32                  `protobuf:"varint,3,opt,name=goods_id,json=goodsId,proto3" json:"goods_id,omitempty"`
-	Nums          int32                  `protobuf:"varint,4,opt,name=nums,proto3" json:"nums,omitempty"`
-	Checked       bool                   `protobuf:"varint,5,opt,name=checked,proto3" json:"checked,omitempty"`
+	GoodsName     string                 `protobuf:"bytes,4,opt,name=goods_name,json=goodsName,proto3" json:"goods_name,omitempty"`
+	GoodsImage    string                 `protobuf:"bytes,5,opt,name=goods_image,json=goodsImage,proto3" json:"goods_image,omitempty"`
+	GoodsPrice    float32                `protobuf:"fixed32,6,opt,name=goods_price,json=goodsPrice,proto3" json:"goods_price,omitempty"`
+	Nums          int32                  `protobuf:"varint,7,opt,name=nums,proto3" json:"nums,omitempty"`
+	Checked       bool                   `protobuf:"varint,8,opt,name=checked,proto3" json:"checked,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -852,6 +855,27 @@ func (x *ShopCartInfoResponse) GetUserId() int32 {
 func (x *ShopCartInfoResponse) GetGoodsId() int32 {
 	if x != nil {
 		return x.GoodsId
+	}
+	return 0
+}
+
+func (x *ShopCartInfoResponse) GetGoodsName() string {
+	if x != nil {
+		return x.GoodsName
+	}
+	return ""
+}
+
+func (x *ShopCartInfoResponse) GetGoodsImage() string {
+	if x != nil {
+		return x.GoodsImage
+	}
+	return ""
+}
+
+func (x *ShopCartInfoResponse) GetGoodsPrice() float32 {
+	if x != nil {
+		return x.GoodsPrice
 	}
 	return 0
 }
@@ -941,13 +965,19 @@ const file_proto_order_proto_rawDesc = "" +
 	"\x14CartItemListResponse\x12\x14\n" +
 	"\x05total\x18\x01 \x01(\x05R\x05total\x124\n" +
 	"\n" +
-	"cart_items\x18\x02 \x03(\v2\x15.ShopCartInfoResponseR\tcartItems\"\x88\x01\n" +
+	"cart_items\x18\x02 \x03(\v2\x15.ShopCartInfoResponseR\tcartItems\"\xe9\x01\n" +
 	"\x14ShopCartInfoResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\x05R\x06userId\x12\x19\n" +
-	"\bgoods_id\x18\x03 \x01(\x05R\agoodsId\x12\x12\n" +
-	"\x04nums\x18\x04 \x01(\x05R\x04nums\x12\x18\n" +
-	"\achecked\x18\x05 \x01(\bR\achecked2\xfe\x03\n" +
+	"\bgoods_id\x18\x03 \x01(\x05R\agoodsId\x12\x1d\n" +
+	"\n" +
+	"goods_name\x18\x04 \x01(\tR\tgoodsName\x12\x1f\n" +
+	"\vgoods_image\x18\x05 \x01(\tR\n" +
+	"goodsImage\x12\x1f\n" +
+	"\vgoods_price\x18\x06 \x01(\x02R\n" +
+	"goodsPrice\x12\x12\n" +
+	"\x04nums\x18\a \x01(\x05R\x04nums\x12\x18\n" +
+	"\achecked\x18\b \x01(\bR\achecked2\xfe\x03\n" +
 	"\fOrderService\x120\n" +
 	"\fCartItemList\x12\t.UserInfo\x1a\x15.CartItemListResponse\x126\n" +
 	"\vCartItemAdd\x12\x10.CartItemRequest\x1a\x15.ShopCartInfoResponse\x12:\n" +

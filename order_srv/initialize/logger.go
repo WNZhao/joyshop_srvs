@@ -10,6 +10,7 @@ package initialize
 
 import (
 	"os"
+	"order_srv/global"
 
 	"go.uber.org/zap"
 )
@@ -30,4 +31,7 @@ func InitLogger() {
 	}
 
 	zap.ReplaceGlobals(logger)
+	
+	// 设置全局 Logger
+	global.Logger = logger.Sugar()
 }

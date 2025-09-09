@@ -49,11 +49,14 @@ func (s *OrderServiceServer) CartItemList(ctx context.Context, req *proto.UserIn
 	cartItems := make([]*proto.ShopCartInfoResponse, 0, len(shoppingCarts))
 	for _, cart := range shoppingCarts {
 		cartItems = append(cartItems, &proto.ShopCartInfoResponse{
-			Id:      cart.ID,
-			UserId:  cart.User,
-			GoodsId: cart.Goods,
-			Nums:    cart.Nums,
-			Checked: cart.Checked,
+			Id:         cart.ID,
+			UserId:     cart.User,
+			GoodsId:    cart.Goods,
+			GoodsName:  cart.GoodsName,
+			GoodsImage: cart.GoodsImage,
+			GoodsPrice: cart.GoodsPrice,
+			Nums:       cart.Nums,
+			Checked:    cart.Checked,
 		})
 	}
 
@@ -82,6 +85,14 @@ func (s *OrderServiceServer) CartItemAdd(ctx context.Context, req *proto.CartIte
 		global.Logger.Error("商品数量无效")
 		return nil, status.Errorf(codes.InvalidArgument, "商品数量必须大于0")
 	}
+	if req.GoodsName == "" {
+		global.Logger.Error("商品名称不能为空")
+		return nil, status.Errorf(codes.InvalidArgument, "商品名称不能为空")
+	}
+	if req.GoodsPrice <= 0 {
+		global.Logger.Error("商品价格无效")
+		return nil, status.Errorf(codes.InvalidArgument, "商品价格必须大于0")
+	}
 
 	var shoppingCart model.ShoppingCart
 
@@ -89,9 +100,12 @@ func (s *OrderServiceServer) CartItemAdd(ctx context.Context, req *proto.CartIte
 	result := global.DB.Where("user = ? AND goods = ?", req.UserId, req.GoodsId).First(&shoppingCart)
 
 	if result.Error == nil {
-		// 商品已存在，更新数量
+		// 商品已存在，更新数量和商品信息（价格可能有变化）
 		global.Logger.Infof("购物车中已存在该商品，更新数量: 原数量 %d，新增数量 %d", shoppingCart.Nums, req.Nums)
 		shoppingCart.Nums += req.Nums
+		shoppingCart.GoodsName = req.GoodsName
+		shoppingCart.GoodsImage = req.GoodsImage
+		shoppingCart.GoodsPrice = req.GoodsPrice
 
 		if err := global.DB.Save(&shoppingCart).Error; err != nil {
 			global.Logger.Errorf("更新购物车商品数量失败: %v", err)
@@ -103,10 +117,13 @@ func (s *OrderServiceServer) CartItemAdd(ctx context.Context, req *proto.CartIte
 		// 商品不存在，创建新记录
 		global.Logger.Infof("购物车中不存在该商品，创建新记录")
 		shoppingCart = model.ShoppingCart{
-			User:    req.UserId,
-			Goods:   req.GoodsId,
-			Nums:    req.Nums,
-			Checked: false,
+			User:       req.UserId,
+			Goods:      req.GoodsId,
+			GoodsName:  req.GoodsName,
+			GoodsImage: req.GoodsImage,
+			GoodsPrice: req.GoodsPrice,
+			Nums:       req.Nums,
+			Checked:    false,
 		}
 
 		if err := global.DB.Create(&shoppingCart).Error; err != nil {

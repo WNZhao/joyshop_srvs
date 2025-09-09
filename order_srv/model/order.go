@@ -14,10 +14,13 @@ import (
 
 type ShoppingCart struct {
 	BaseModel
-	User    int32 `gorm:"type:int;index;not null;comment:用户ID" json:"user"` // 在购物车列表中我们要查询当前用户的购物车记录
-	Goods   int32 `gorm:"type:int;index;not null;comment:<UNK>" json:"goods"`
-	Nums    int32 `gorm:"type:int;index;not null;comment:<UNK>" json:"nums"`
-	Checked bool  `gorm:"type:bool;default:true;comment:是否选中" json:"checked"` //是否选中
+	User       int32   `gorm:"type:int;index;not null;comment:用户ID" json:"user"`
+	Goods      int32   `gorm:"type:int;index;not null;comment:商品ID" json:"goods"`
+	GoodsName  string  `gorm:"type:varchar(100);not null;comment:商品名称" json:"goods_name"`
+	GoodsImage string  `gorm:"type:varchar(200);comment:商品图片" json:"goods_image"`
+	GoodsPrice float32 `gorm:"type:decimal(10,2);not null;comment:商品价格快照" json:"goods_price"`
+	Nums       int32   `gorm:"type:int;not null;comment:商品数量" json:"nums"`
+	Checked    bool    `gorm:"type:bool;default:true;comment:是否选中" json:"checked"`
 }
 
 type OrderInfo struct {
