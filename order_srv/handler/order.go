@@ -6,6 +6,7 @@ import (
 	"order_srv/global"
 	"order_srv/model"
 	"order_srv/proto"
+	goodsproto "order_srv/proto/goods"
 	inventorypb "order_srv/proto/inventory"
 	"order_srv/utils"
 	"time"
@@ -85,13 +86,37 @@ func (s *OrderServiceServer) CartItemAdd(ctx context.Context, req *proto.CartIte
 		global.Logger.Error("商品数量无效")
 		return nil, status.Errorf(codes.InvalidArgument, "商品数量必须大于0")
 	}
-	if req.GoodsName == "" {
-		global.Logger.Error("商品名称不能为空")
-		return nil, status.Errorf(codes.InvalidArgument, "商品名称不能为空")
+	
+	// 验证商品是否存在（通过调用商品服务）
+	goodsClient := goodsproto.NewGoodsClient(global.GoodsClient)
+	goodsDetailReq := &goodsproto.GoodInfoRequest{
+		Id: req.GoodsId,
 	}
-	if req.GoodsPrice <= 0 {
-		global.Logger.Error("商品价格无效")
-		return nil, status.Errorf(codes.InvalidArgument, "商品价格必须大于0")
+	
+	goodsInfo, err := goodsClient.GetGoodsDetail(ctx, goodsDetailReq)
+	if err != nil {
+		global.Logger.Errorf("查询商品详情失败，商品ID: %d, 错误: %v", req.GoodsId, err)
+		if statusErr, ok := status.FromError(err); ok {
+			if statusErr.Code() == codes.NotFound {
+				return nil, status.Errorf(codes.NotFound, "商品不存在")
+			}
+		}
+		return nil, status.Errorf(codes.Internal, "查询商品信息失败")
+	}
+	
+	// 检查商品是否上架
+	if !goodsInfo.OnSale {
+		global.Logger.Warnf("商品已下架，商品ID: %d", req.GoodsId)
+		return nil, status.Errorf(codes.FailedPrecondition, "商品已下架")
+	}
+	
+	// 使用商品服务返回的实际信息，而不是用户传入的信息
+	// 这样可以确保购物车中的商品信息是最新的
+	req.GoodsName = goodsInfo.Name
+	req.GoodsPrice = goodsInfo.ShopPrice
+	// 如果有商品图片，使用第一张图片
+	if len(goodsInfo.Images) > 0 {
+		req.GoodsImage = goodsInfo.Images[0]
 	}
 
 	var shoppingCart model.ShoppingCart
