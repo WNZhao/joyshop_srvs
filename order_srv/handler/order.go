@@ -634,9 +634,9 @@ func (s *OrderServiceServer) OrderDetail(ctx context.Context, req *proto.OrderRe
 		return nil, status.Errorf(codes.Internal, "查询订单信息失败")
 	}
 
-	// 查询订单商品详情
+	// 查询订单商品详情 - 使用实际的订单ID
 	var orderGoods []model.OrderGoods
-	if err := global.DB.Where("order = ?", req.Id).Find(&orderGoods).Error; err != nil {
+	if err := global.DB.Where("`order` = ?", orderInfo.ID).Find(&orderGoods).Error; err != nil {
 		global.Logger.Errorf("查询订单商品失败: %v", err)
 		return nil, status.Errorf(codes.Internal, "查询订单商品失败")
 	}
