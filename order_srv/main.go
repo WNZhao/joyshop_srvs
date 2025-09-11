@@ -66,11 +66,14 @@ func main() {
 
 	// 启动服务
 	go func() {
-		zap.S().Infof("库存服务启动成功，监听地址: %s", addr)
+		zap.S().Infof("订单服务启动成功，监听地址: %s", addr)
 		if err := server.Serve(lis); err != nil {
 			zap.S().Fatalf("启动服务失败: %v", err)
 		}
 	}()
+	
+	// 启动订单超时检查定时任务
+	handler.StartTimeoutChecker()
 
 	// 注册服务到 Consul
 	if err := util.RegisterService(); err != nil {

@@ -33,6 +33,7 @@ type OrderInfo struct {
 	TradeNo      string `gorm:"type:varchar(100);comment:'交易号'"` // 交易号就是支付订单号
 	OrderMount   float32
 	PayTime      *time.Time `gorm:"comment:支付时间"`
+	PayDeadline  *time.Time `gorm:"comment:支付截止时间"`  // 新增：支付截止时间
 	Address      string `gorm:"type:varchar(100)"`
 	SignerName   string `gorm:"type:varchar(20)"`
 	SingerMobile string `gorm:"type:varchar(11)"`

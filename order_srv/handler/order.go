@@ -373,12 +373,15 @@ func (s *OrderServiceServer) OrderCreate(ctx context.Context, req *proto.OrderRe
 	orderSn := utils.GenerateOrderSn(req.UserId)
 	
 	// 创建订单基本信息
+	// 设置支付截止时间为30分钟后
+	payDeadline := time.Now().Add(30 * time.Minute)
 	orderInfo := model.OrderInfo{
 		User:         req.UserId,
 		OrderSn:      orderSn,
 		PayType:      "alipay", // 默认支付宝，后续可从请求中获取
-		Status:       "WAIT_BUYER_PAY",
+		Status:       "PAYING",  // 初始状态改为待支付
 		OrderMount:   0, // 先设为0，后面计算
+		PayDeadline:  &payDeadline, // 设置支付截止时间
 		Address:      req.Address,
 		SignerName:   req.Name,
 		SingerMobile: req.Mobile,
