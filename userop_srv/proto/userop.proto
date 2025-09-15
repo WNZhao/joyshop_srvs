@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package userop;
+
+option go_package = "./;proto";
+
+import "google/protobuf/empty.proto";
+
+service UserOp {
+  // 收藏相关
+  rpc GetFavList(UserFavRequest) returns (FavListResponse);
+  rpc AddUserFav(UserFavRequest) returns (google.protobuf.Empty);
+  rpc DeleteUserFav(UserFavRequest) returns (google.protobuf.Empty);
+  rpc GetUserFavDetail(UserFavRequest) returns (google.protobuf.Empty);
+  rpc IsFav(UserFavRequest) returns (IsFavResponse);
+  
+  // 收货地址相关
+  rpc GetAddressList(AddressRequest) returns (AddressListResponse);
+  rpc CreateAddress(Address) returns (AddressResponse);
+  rpc UpdateAddress(Address) returns (google.protobuf.Empty);
+  rpc DeleteAddress(AddressRequest) returns (google.protobuf.Empty);
+  
+  // 留言相关
+  rpc CreateMessage(MessageRequest) returns (MessageResponse);
+  rpc MessageList(MessageRequest) returns (MessageListResponse);
+}
+
+// 收藏相关消息
+message UserFavRequest {
+  int32 userId = 1;
+  int32 goodsId = 2;
+  int32 pages = 3;
+  int32 pagePerNums = 4;
+}
+
+message FavListResponse {
+  int32 total = 1;
+  repeated GoodsInfo data = 2;
+}
+
+message GoodsInfo {
+  int32 id = 1;
+  string name = 2;
+  float shopPrice = 3;
+  string goodsBrief = 4;
+  string images = 5;
+}
+
+message IsFavResponse {
+  bool success = 1;
+}
+
+// 收货地址相关消息
+message AddressRequest {
+  int32 id = 1;
+  int32 userId = 2;
+}
+
+message Address {
+  int32 id = 1;
+  int32 userId = 2;
+  string province = 3;
+  string city = 4;
+  string district = 5;
+  string address = 6;
+  string signerName = 7;
+  string signerMobile = 8;
+}
+
+message AddressResponse {
+  int32 id = 1;
+}
+
+message AddressListResponse {
+  int32 total = 1;
+  repeated Address data = 2;
+}
+
+// 留言相关消息
+message MessageRequest {
+  int32 id = 1;
+  int32 userId = 2;
+  int32 messageType = 3;
+  string subject = 4;
+  string message = 5;
+  string file = 6;
+  int32 pages = 7;
+  int32 pagePerNums = 8;
+}
+
+message MessageResponse {
+  int32 id = 1;
+}
+
+message MessageListResponse {
+  int32 total = 1;
+  repeated MessageInfo data = 2;
+}
+
+message MessageInfo {
+  int32 id = 1;
+  int32 userId = 2;
+  int32 messageType = 3;
+  string subject = 4;
+  string message = 5;
+  string file = 6;
+}
