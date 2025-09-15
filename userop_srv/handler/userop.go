@@ -46,11 +46,23 @@ func (s *UserOpServer) GetFavList(ctx context.Context, req *proto.UserFavRequest
 func (s *UserOpServer) AddUserFav(ctx context.Context, req *proto.UserFavRequest) (*emptypb.Empty, error) {
 	var userFav model.UserFav
 
-	// 检查是否已经收藏
+	// 检查是否已经收藏（不包含软删除的记录）
 	if result := global.DB.Where(&model.UserFav{User: req.UserId, Goods: req.GoodsId}).First(&userFav); result.RowsAffected == 1 {
 		return nil, status.Errorf(codes.AlreadyExists, "已经收藏过了")
 	}
 
+	// 检查是否存在软删除的记录
+	var deletedFav model.UserFav
+	if result := global.DB.Unscoped().Where(&model.UserFav{User: req.UserId, Goods: req.GoodsId}).First(&deletedFav); result.RowsAffected == 1 {
+		// 如果存在软删除的记录，恢复它
+		deletedFav.DeletedAt = gorm.DeletedAt{}
+		if result := global.DB.Unscoped().Save(&deletedFav); result.Error != nil {
+			return nil, status.Errorf(codes.Internal, "恢复收藏失败")
+		}
+		return &emptypb.Empty{}, nil
+	}
+
+	// 创建新的收藏记录
 	userFav.User = req.UserId
 	userFav.Goods = req.GoodsId
 
