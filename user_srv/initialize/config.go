@@ -61,10 +61,10 @@ func initNacosConfig() error {
 	}
 
 	// 如果配置了用户名和密码，则设置认证信息
-	if nacosConfig.Username != "" && nacosConfig.Password != "" {
-		cc.Username = nacosConfig.Username
+	if nacosConfig.User != "" && nacosConfig.Password != "" {
+		cc.Username = nacosConfig.User
 		cc.Password = nacosConfig.Password
-		zap.S().Infof("使用 Nacos 认证: Username=%s", nacosConfig.Username)
+		zap.S().Infof("使用 Nacos 认证: Username=%s", nacosConfig.User)
 	} else {
 		zap.S().Info("未配置 Nacos 认证信息，使用匿名访问")
 	}

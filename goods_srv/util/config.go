@@ -63,7 +63,7 @@ func LoadRemoteConfig(nacosConfig *config.NacosConfig, targetConfig interface{})
 		LogDir:              nacosConfig.LogDir,
 		CacheDir:            nacosConfig.CacheDir,
 		LogLevel:            nacosConfig.LogLevel,
-		Username:            nacosConfig.Username, // 新增
+		Username:            nacosConfig.User, // 新增
 		Password:            nacosConfig.Password, // 新增
 	}
 

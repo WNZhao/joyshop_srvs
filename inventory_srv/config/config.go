@@ -48,6 +48,6 @@ type NacosConfig struct {
 	LogLevel  string `mapstructure:"logLevel"`
 	DataId    string `mapstructure:"dataId"`
 	Group     string `mapstructure:"group"`
-	Username  string `mapstructure:"username"`
+	User     string `mapstructure:"user"`
 	Password  string `mapstructure:"password"`
 }
