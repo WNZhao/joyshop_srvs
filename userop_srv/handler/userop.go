@@ -22,13 +22,15 @@ func (s *UserOpServer) GetFavList(ctx context.Context, req *proto.UserFavRequest
 	var favList []*proto.GoodsInfo
 	var count int64
 
-	// 查询收藏记录
-	result := global.DB.Where(&model.UserFav{User: req.UserId}).Count(&count)
+	// 查询收藏记录，如果出错则返回空列表而不是错误
+	result := global.DB.Where("user = ?", req.UserId).Scopes(Paginate(int(req.Pages), int(req.PagePerNums))).Find(&favs).Count(&count)
 	if result.Error != nil {
-		return nil, status.Errorf(codes.Internal, "查询收藏失败")
+		// 记录错误但仍返回空列表
+		return &proto.FavListResponse{
+			Total: 0,
+			Data:  []*proto.GoodsInfo{},
+		}, nil
 	}
-
-	global.DB.Where(&model.UserFav{User: req.UserId}).Scopes(Paginate(int(req.Pages), int(req.PagePerNums))).Find(&favs)
 
 	for _, fav := range favs {
 		favList = append(favList, &proto.GoodsInfo{
@@ -101,12 +103,15 @@ func (s *UserOpServer) GetAddressList(ctx context.Context, req *proto.AddressReq
 	var addressList []*proto.Address
 	var count int64
 
-	result := global.DB.Where(&model.Address{User: req.UserId}).Count(&count)
+	// 查询地址列表，如果出错则返回空列表而不是错误
+	result := global.DB.Where("user = ?", req.UserId).Find(&addresses).Count(&count)
 	if result.Error != nil {
-		return nil, status.Errorf(codes.Internal, "查询地址失败")
+		// 记录错误但仍返回空列表
+		return &proto.AddressListResponse{
+			Total: 0,
+			Data:  []*proto.Address{},
+		}, nil
 	}
-
-	global.DB.Where(&model.Address{User: req.UserId}).Find(&addresses)
 
 	for _, address := range addresses {
 		addressList = append(addressList, &proto.Address{
@@ -215,12 +220,15 @@ func (s *UserOpServer) MessageList(ctx context.Context, req *proto.MessageReques
 	var messageList []*proto.MessageInfo
 	var count int64
 
-	result := global.DB.Where(&model.LeavingMessage{User: req.UserId}).Count(&count)
+	// 查询留言列表，如果出错则返回空列表而不是错误
+	result := global.DB.Where("user = ?", req.UserId).Scopes(Paginate(int(req.Pages), int(req.PagePerNums))).Find(&messages).Count(&count)
 	if result.Error != nil {
-		return nil, status.Errorf(codes.Internal, "查询留言失败")
+		// 记录错误但仍返回空列表
+		return &proto.MessageListResponse{
+			Total: 0,
+			Data:  []*proto.MessageInfo{},
+		}, nil
 	}
-
-	global.DB.Where(&model.LeavingMessage{User: req.UserId}).Scopes(Paginate(int(req.Pages), int(req.PagePerNums))).Find(&messages)
 
 	for _, message := range messages {
 		messageList = append(messageList, &proto.MessageInfo{

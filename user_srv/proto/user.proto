@@ -52,6 +52,9 @@ message UpdateUserInfo{
   string email = 4;
   string nickname = 5;
   uint64 birthday = 6;
+  string gender = 7;
+  string avatar = 8;
+  string username = 9;
 }
 
 message UserInfoResponse{

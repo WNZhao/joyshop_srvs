@@ -160,14 +160,71 @@ func (s *UserServer) UpdateUser(ctx context.Context, req *proto.UpdateUserInfo) 
 	if result.RowsAffected == 0 {
 		return nil, status.Errorf(codes.NotFound, "用户不存在")
 	}
-	user.NickName = req.Nickname
-	user.Email = req.Email
-	birthday := time.Unix(int64(req.Birthday), 0)
-	user.Birthday = &birthday
-	result = global.DB.Save(&user)
+
+	// 只更新非空字段，支持部分字段更新
+	updates := make(map[string]interface{})
+
+	// 检查用户名和邮箱是否重复（如果要更新的话）
+	if req.Username != "" {
+		var existUser model.User
+		result := global.DB.Where("user_name = ? AND id != ?", req.Username, req.Id).First(&existUser)
+		if result.RowsAffected > 0 {
+			return nil, status.Errorf(codes.AlreadyExists, "用户名已被使用")
+		}
+		updates["user_name"] = req.Username
+	}
+
+	if req.Email != "" {
+		var existUser model.User
+		result := global.DB.Where("email = ? AND id != ?", req.Email, req.Id).First(&existUser)
+		if result.RowsAffected > 0 {
+			return nil, status.Errorf(codes.AlreadyExists, "邮箱已被使用")
+		}
+		updates["email"] = req.Email
+	}
+
+	if req.Mobile != "" {
+		var existUser model.User
+		result := global.DB.Where("mobile = ? AND id != ?", req.Mobile, req.Id).First(&existUser)
+		if result.RowsAffected > 0 {
+			return nil, status.Errorf(codes.AlreadyExists, "手机号已被使用")
+		}
+		updates["mobile"] = req.Mobile
+	}
+
+	if req.Nickname != "" {
+		updates["nick_name"] = req.Nickname
+	}
+	if req.Gender != "" {
+		updates["gender"] = req.Gender
+	}
+	if req.Avatar != "" {
+		updates["avatar"] = req.Avatar
+	}
+	if req.Birthday != 0 {
+		birthday := time.Unix(int64(req.Birthday), 0)
+		updates["birthday"] = &birthday
+	}
+	if req.Password != "" {
+		// 如果更新密码，需要重新加密
+		options := &password.Options{10, 100, 32, sha512.New}
+		salt, encodedPwd := password.Encode(req.Password, options)
+		newPassword := fmt.Sprintf("$pbkdf2-sha512$%s$%s", salt, encodedPwd)
+		updates["password"] = newPassword
+	}
+
+	// 如果没有要更新的字段，直接返回
+	if len(updates) == 0 {
+		return &emptypb.Empty{}, nil
+	}
+
+	// 使用 Updates 方法进行部分更新
+	result = global.DB.Model(&user).Updates(updates)
 	if result.Error != nil {
 		return nil, status.Errorf(codes.Internal, result.Error.Error())
 	}
+
+	zap.S().Infof("用户 ID=%d 更新成功，更新字段: %+v", req.Id, updates)
 	return &emptypb.Empty{}, nil
 }
 
