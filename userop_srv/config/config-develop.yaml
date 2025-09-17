@@ -1,6 +1,6 @@
 name: userop_srv
 host: 192.168.1.2
-port: 50054
+port: 50055
 tags: ['userop', 'srv']
 consul:
   host: 192.168.1.2

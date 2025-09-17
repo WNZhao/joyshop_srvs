@@ -8,5 +8,5 @@ nacos:
   logLevel: 'debug'
   dataId: 'user_srv'
   group: 'dev'
-  username: 'nacos'
+  user: 'nacos'
   password: 'nacos'
